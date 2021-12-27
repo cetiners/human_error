@@ -3,9 +3,9 @@ from dice import dice
 import random
 
 class event:
-    def __init__(self, name="Interaction Name"):
+    def __init__(self, name="Interaction Name", map_size=32):
         self.name = name
-        self.location = random.uniform(0.1,float(32))
+        self.location = random.uniform(0.1,map_size)
 
     def battle(self, p1, p2):
 
