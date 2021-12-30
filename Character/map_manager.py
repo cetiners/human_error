@@ -11,14 +11,18 @@ class map():
         self.size = int(size**0.5)
         self.coord = np.zeros((self.size,self.size),dtype="int")
 
+        self.location_coordinates = {}
+        self.location_events = {}
+        self.vors = {}
+         
 
-    def place_character(self, character):
-        return random.uniform(0.1,float(self.size))
+    def place_character(self):
+        return [random.uniform(0.1,float(self.size)) for i in range(2)]
 
-
-    def populate_map(self, n_locations=10, name="Regions"):
+    def populate_map(self, n_locations=10, name="Regions", is_event=False):
         centroids = [tuple([random.uniform(0.1,float(self.size)) for i in range(2)]) for i in range(n_locations)]
-        vor = Voronoi(centroids)
+        centroids_rounded = [[float(format(centroid[0], '.2f')),float(format(centroid[1], '.2f'))] for centroid in centroids]
+        vor = Voronoi(centroids_rounded)
         fig = voronoi_plot_2d(vor, show_vertices=False, line_colors='black',line_width=0.5, line_alpha=0.6, point_size=1)
         fig.set_size_inches(18.5, 10.5)
         for region in vor.regions:
@@ -27,7 +31,9 @@ class map():
                 plt.fill(*zip(*polygon),alpha=0.4)
                 plt.xlim(right=0, left=self.size)
                 plt.ylim(bottom=0, top=self.size)
-        self.vor = vor
+        self.vors[name] = vor
+        self.location_coordinates[name] = vor.points
+        self.location_events[name] = is_event
         return vor
 
     def check_region(self,coordinates):
@@ -36,18 +42,18 @@ class map():
         dst, regions = voronoi_kdtree.query(coordinates)
         return regions
 
-    def create_regions(self, potential_regions, region_weights):
+    def create_regions(self, name, potential_regions, region_weights):
         types = {}
-        for i in range(0,len(self.vor.regions)):    
-            types[str(self.vor.regions[i])] = (random.choices(list(potential_regions.keys()), weights =region_weights,k=1))[0]
+        for i in range(0,len(self.vors[name].regions)):    
+            types[str(self.vors[name].regions[i])] = (random.choices(list(potential_regions.keys()), weights =region_weights,k=1))[0]
 
-        fig = voronoi_plot_2d(self.vor, show_vertices=False, line_colors='white',line_width=0.0, line_alpha=0.0, point_size=1)
+        fig = voronoi_plot_2d(self.vors[name], show_vertices=False, line_colors='white',line_width=0.0, line_alpha=0.0, point_size=1)
         fig.set_size_inches(18.5, 10.5)
-        for region in self.vor.regions:
+        for region in self.vors[name].regions:
             if not -1 in region:
-                polygon = [self.vor.vertices[i] for i in region]
+                polygon = [self.vors[name].vertices[i] for i in region]
                 plt.fill(*zip(*polygon),color=potential_regions[types[str(region)]],alpha=0.4)
             plt.xlim(right=0, left=self.size)
             plt.ylim(bottom=0, top=self.size)
         return types
-
+        

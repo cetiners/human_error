@@ -1,6 +1,8 @@
 
 import random
 
+from matplotlib.pyplot import xcorr
+
 from character_attributes import race_picker, race_bonus, attribute_picker, size_selector, speed_selector, class_picker, modifier, level_calculator, armor_class, starting_wealth
 from states import get_karma, get_keys
 
@@ -69,13 +71,61 @@ class npc:
             self.state["inventory"] = self.inventory
             self.state["max_hp"] = self.max_hp
 
-    def travel(self, destination, destination_name):
-        if (abs(destination[0]-self.location[0]) <= 1) & (abs(destination[1]-self.location[1]) <= 1):
-            print(f"{self.name} is travelling to {destination_name}")
-            self.location = destination
-        else:
-            print("You can't teleport there numnuts.")
+    def travel(self, destination, destination_name = None):
 
+        x_1,y_1 = self.location[0], self.location[1]
+        x_2,y_2 = destination[0], destination[1]
+
+        if destination_name != None:
+            self.location_name = destination_name
+        else:
+            self.location_name = "Unknown"
+
+        travel_distance = (((x_2 - x_1)**2)+((y_2 - y_1)**2))**(0.5)
+        
+        steps = int(travel_distance) * 10
+        slope = abs(y_2-y_1) / abs(x_2 - x_1)
+        intercept = y_1 - (slope * x_1)
+        stops = []
+
+        x_steps = int(abs(x_2 - x_1) * 10)
+        y_steps = int(abs(y_2 - y_1) * 10)
+
+        x = x_1
+
+        for i in range(x_steps):
+            if x_1 < x_2:
+                x = x + 0.1
+            elif x_1 > x_2:
+                x = x - 0.1        
+            y = slope * x + intercept
+            stops.append([float(format(x, '.2f')),float(format(y, '.2f'))])
+        
+        y = y_1
+
+        for j in range(y_steps):
+            if y_1 < y_2:
+                y = y + 0.1
+            elif y_1 > y_2:
+                y = y - 0.1        
+            x = (y - intercept) / slope
+            stops.append([float(format(x, '.2f')),float(format(y, '.2f'))])
+            stops.append([float(format(destination[0], '.2f')),float(format(destination[1], '.2f'))])
+            stops.sort()
+
+
+        # kontrolü stops loopundan başlatmak elzem, bütün yolu gitmiyor zira, ya da stepleri yaşat self.location'ları her seferinde çek.
+
+        for stop in stops:
+            for location in self.map.location_coordinates:
+                if stop in self.map.location_coordinates[location]:
+                    print(f"You encountered {location}")
+                    if self.map.location_events[location]:
+                        print("Get ready!")
+                        self.location = stop
+                        print(f"Player location: {self.location}")
+                        #event_starter(self.location)
+                        break
 
     def adjust_karma(self, points):
         self.karma = self.karma + points
