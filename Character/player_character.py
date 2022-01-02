@@ -6,13 +6,15 @@ from matplotlib.pyplot import xcorr
 from character_attributes import race_picker, race_bonus, attribute_picker, size_selector, speed_selector, class_picker, modifier, level_calculator, armor_class, starting_wealth
 from states import get_karma, get_keys
 
+from dice import dice
+
 
 class npc:
     """ 
     The class for generating npc's at t=0 of game time, attributes, abilities that are the same as the 
     player character. NPC's are created to be interacted with the player.
     """
-    def __init__(self, name, map, xp=0, p_type="npc"):
+    def __init__(self, name, map, xp=0, p_type="npc",p_health=100):
         
         self.name = name
         self.ptype = p_type
@@ -20,6 +22,7 @@ class npc:
         self.c_class = class_picker()
         self.wealth = starting_wealth(self.c_class)
         self.map = map
+
 
         # Attributes
         atr = attribute_picker()
@@ -46,8 +49,8 @@ class npc:
         self.size = size_selector(self.c_race)
         self.speed = speed_selector(self.c_race)
         self.xp = xp
-        self.max_hp = 123
-        self.hp = 150
+        self.max_hp = p_health
+        self.hp = p_health
         self.ac = armor_class()
         self.level = level_calculator(self.xp)
 
@@ -57,6 +60,10 @@ class npc:
         self.inventory = ["Don"]
         self.keys = get_keys()
         self.location = self.map.place_character()
+
+        if p_type == "npc":
+            self.wealth = random.randint(0,15)
+            self.karma = random.randint(-50,+50)
 
         if p_type != "npc":
             #for atr in self.attrisbutes:
@@ -115,7 +122,6 @@ class npc:
 
 
         # kontrolü stops loopundan başlatmak elzem, bütün yolu gitmiyor zira, ya da stepleri yaşat self.location'ları her seferinde çek.
-
         for stop in stops:
             for location in self.map.location_coordinates:
                 if stop in self.map.location_coordinates[location]:
@@ -124,8 +130,13 @@ class npc:
                         print("Get ready!")
                         self.location = stop
                         print(f"Player location: {self.location}")
-                        #event_starter(self.location)
+                        self.map.event_starter(location, self)
                         break
+                    break
+                else:
+                    continue
+            break
+
 
     def adjust_karma(self, points):
         self.karma = self.karma + points
@@ -177,6 +188,58 @@ class npc:
             print(f"{self.name} leveled up to level {self.level}!")
         self.state["xp"] = self.xp
         self.state["level"] = self.level
+
+    def battle(self, p2, event_name=""):
+        print(f"{self.name} and {p2.name} faces each other on {event_name}!")
+        if self.dex > p2.dex:
+            faster = self
+            slower = p2
+        else:
+            faster = p2
+            slower = self
+        turns = [faster, slower]
+        round = 0 
+        while True:
+            attacker = turns[0]
+            defender = turns[1]
+            roll_to_attack = dice(20)
+            attack_roll = dice(20)
+            roll_to_defend = dice(20)
+            round += 1
+            print(f"{attacker.name} tries to hit!")
+            if roll_to_attack == 20:
+                print("Critical Success")
+                attack_roll = attack_roll*1.5
+            elif roll_to_attack == 0:
+                print("Critical Failiure")
+                attack_roll = attack_roll * 0.5
+                attacker.receive_damage(attack_roll)
+            if roll_to_attack >= roll_to_defend:
+                print("Success!")
+                defender.receive_damage(attack_roll)
+            else:
+                print(f"{defender.name} gets out of the way!")
+            turns = turns[::-1]
+            if self.hp <= 0:
+                winner = p2
+                loser = self
+                print(f"{self.name} has died, {p2.name} is victorious!")
+                print("Battle is over.")
+                break
+            elif p2.hp <= 0:
+                winner = self
+                loser = p2
+                print(f"{p2.name} has died, {self.name} is victorious!")
+                print("Battle is over.")
+                break
+            print("----------------------------------------------------------------")
+        winner.gain_xp(loser.xp)
+        winner.money_transaction(loser.wealth, op="gain")
+        if loser.alignment == "evil":
+            winner.adjust_karma(+50)
+        elif loser.alignment == "good":
+            winner.adjust_karma(-50)
+
 
     def character_sheet(self):
         print(f"Meet {self.name}!, a {self.ptype}\n")

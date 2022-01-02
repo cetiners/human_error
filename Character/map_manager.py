@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from player_character import npc
 from scipy.spatial import Voronoi, voronoi_plot_2d,  cKDTree
 import random
 
@@ -14,6 +15,8 @@ class map():
         self.location_coordinates = {}
         self.location_events = {}
         self.vors = {}
+
+        self.interactions = {}
          
 
     def place_character(self):
@@ -35,6 +38,14 @@ class map():
         self.location_coordinates[name] = vor.points
         self.location_events[name] = is_event
         return vor
+
+    def event_starter(self, event, player):
+        location = player.location
+
+        if event == "ambush":
+            goblin = npc("Grognag",self,xp=20,p_health=15)
+            player.battle(goblin, "Goblin Ambush")
+
 
     def check_region(self,coordinates):
         points = self.vor.points

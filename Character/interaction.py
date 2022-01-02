@@ -3,11 +3,26 @@ from dice import dice
 import random
 
 class event:
+
+    """
+    Main closs for any possible interactions that players or npc's can have in the game. 
+
+    Takes characters and context as inputs.
+    
+    Character or characters may be used, depending on the type and outcome:
+
+    Updates character state/attributes
+    Updates game state/attributes
+    Updates map state/attributes
+
+    """
+
     def __init__(self, name="Interaction Name", map_size=32):
         self.name = name
         self.location = random.uniform(0.1,map_size)
 
     def battle(self, p1, p2):
+        # mock battle between two characters.
 
         print(f"{p1.name} and {p2.name} faces each other on {self.name}!")
 
@@ -58,6 +73,8 @@ class event:
                 print("Battle is over.")
                 break
             print("----------------------------------------------------------------")
+
+        # update xp, money and karma attributes of the "winner"
         winner.gain_xp(500)
         winner.money_transaction(50, op="gain")
         winner.adjust_karma(50)
