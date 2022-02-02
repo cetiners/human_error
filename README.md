@@ -4,4 +4,4 @@ This project aims to utilize evolutionary algorithms for content generatation. F
 
 .
 
-![alt text](https://github.com/cetiners/human_error/blob/tools/overview_vol1.png?raw=true)
+![alt text](https://github.com/cetiners/human_error/blob/main/tools/overview_vol1.png)
