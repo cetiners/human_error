@@ -1,5 +1,5 @@
 
-from dice import dice
+from tools.dice import dice
 import random
 
 class event:

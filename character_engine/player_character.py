@@ -3,10 +3,10 @@ import random
 
 from matplotlib.pyplot import xcorr
 
-from character_attributes import race_picker, race_bonus, attribute_picker, size_selector, speed_selector, class_picker, modifier, level_calculator, armor_class, starting_wealth
-from states import get_karma, get_keys
+from character_engine.character_attributes import race_picker, race_bonus, attribute_picker, size_selector, speed_selector, class_picker, modifier, level_calculator, armor_class, starting_wealth
+from character_engine.states import get_karma, get_keys
 
-from dice import dice
+from tools.dice import dice
 
 
 class npc:

@@ -1,9 +1,7 @@
 
-from dice import dice
-from player_character import npc
-from interaction import event
-from map_manager import map
-import numpy as np
+from tools.dice import dice
+from character_engine.player_character import npc
+from map_manager.map_generator import map
 
 denizli = map()
 
