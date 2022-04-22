@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from character_engine.player_character import npc
 from scipy.spatial import Voronoi, voronoi_plot_2d,  cKDTree
+from tools.lloyd_relaxation import relax, voronoi
 import random
 
 
@@ -9,7 +10,7 @@ class map():
 
     def __init__(self, name="Map", size=1024):
         self.name = name
-        self.size = int(size**0.5)
+        self.size = size
 
         # Initialize map with an array of zeros.
         self.coord = np.zeros((self.size,self.size),dtype="int")
@@ -25,14 +26,22 @@ class map():
         # Return random a random coordinate
         return [random.uniform(0.1,float(self.size)) for i in range(2)]
 
-    def populate_map(self, n_locations=10, name="Regions", is_event=False, print=False):
+    def populate_map(self, n_locations=512, name="Regions", is_event=False, print=False, relaxed=True,k=10):
 
         # Place centroids to be used as region centres.
-        centroids = [tuple([random.uniform(0.1,float(self.size)) for i in range(2)]) for i in range(n_locations)]
-        centroids_rounded = [[float(format(centroid[0], '.2f')),float(format(centroid[1], '.2f'))] for centroid in centroids]
+        centroids = np.random.randint(0,self.size, (n_locations+2, 2))
 
         # Generate Voronoi regions (All points closer to one specific centroid is in a region.)
-        vor = Voronoi(centroids_rounded)
+
+        if relaxed:
+            centroids = relax(centroids,self.size,k=10)
+
+        edge_points = self.size*np.array([[-1, -1], [-1, 2], [2, -1], [2, 2]])
+
+        new_centroids = np.vstack([centroids, edge_points])
+
+        vor = Voronoi(new_centroids)
+
         if print:
             fig = voronoi_plot_2d(vor, show_vertices=False, line_colors='black',line_width=0.5, line_alpha=0.6, point_size=1)
             fig.set_size_inches(18.5, 10.5)
@@ -42,6 +51,7 @@ class map():
                     plt.fill(*zip(*polygon),alpha=0.4)
                     plt.xlim(right=0, left=self.size)
                     plt.ylim(bottom=0, top=self.size)
+
         self.vors[name] = vor
         self.location_coordinates[name] = vor.points
         self.location_events[name] = is_event
