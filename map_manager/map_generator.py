@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from character_engine.player_character import npc
 from scipy.spatial import Voronoi, voronoi_plot_2d,  cKDTree
-from tools.lloyd_relaxation import relax, voronoi
+from lloyd_relaxation import relax, voronoi
 import random
 
 
