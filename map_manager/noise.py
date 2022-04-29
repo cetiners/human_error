@@ -29,9 +29,9 @@ def proper_map(map, size,noise_map):
     boundary_noise = np.indices((size, size)).T + boundary_displacement*boundary_noise
     boundary_noise = boundary_noise.clip(0, size-1).astype(np.uint32)
 
-    blurred_vor_map = np.zeros_like(a)
+    blurred_vor_map = np.zeros_like(map)
 
     for x in range(size):
         for y in range(size):
             j, i = boundary_noise[x, y]
-            blurred_vor_map[x, y] = a[i, j]
+            blurred_vor_map[x, y] = map[i, j]

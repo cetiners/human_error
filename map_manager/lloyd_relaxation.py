@@ -12,7 +12,6 @@ def voronoi(points, size):
     return vor
 
 
-
 def relax(points, size, k=10):  
     new_points = points.copy()
     for _ in range(k):
