@@ -16,12 +16,3 @@ def typing(message):
         sys.stdout.write(word)
         sys.stdout.flush()
     time.sleep(.1)
-
-for i in range(1):
-    typing("...")
-    time.sleep(0.1)
-    os.system("clear")
-typing("Cold")
-
-os.system("clear")
-typing("It is very cold")

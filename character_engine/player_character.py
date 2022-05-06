@@ -1,5 +1,8 @@
 
 import random
+import time
+
+from tools.flavour import typing
 
 from matplotlib.pyplot import xcorr
 
@@ -80,6 +83,8 @@ class npc:
 
     def travel(self, destination, destination_name = None):
 
+        typing(f"{self.name} starts a journey.")
+
         x_1,y_1 = self.location[0], self.location[1]
         x_2,y_2 = destination[0], destination[1]
 
@@ -125,11 +130,11 @@ class npc:
         for stop in stops:
             for location in self.map.location_coordinates:
                 if stop in self.map.location_coordinates[location]:
-                    print(f"You encountered {location}")
+                    typing(f"{self.name} encounters an {location}")
                     if self.map.location_events[location]:
-                        print("Get ready!")
+                        typing("Get ready!")
                         self.location = stop
-                        print(f"Player location: {self.location}")
+                        typing(f"Player location: {self.location}")
                         self.map.event_starter(location, self)
                         break
                     break
@@ -190,7 +195,7 @@ class npc:
         self.state["level"] = self.level
 
     def battle(self, p2, event_name=""):
-        print(f"{self.name} and {p2.name} faces each other on {event_name}!")
+        typing(f"{self.name} and {p2.name} faces each other on {event_name}!")
         if self.dex > p2.dex:
             faster = self
             slower = p2
@@ -206,7 +211,7 @@ class npc:
             attack_roll = dice(20)
             roll_to_defend = dice(20)
             round += 1
-            print(f"{attacker.name} tries to hit!")
+            typing(f"{attacker.name} tries to hit!")
             if roll_to_attack == 20:
                 print("Critical Success")
                 attack_roll = attack_roll*1.5
@@ -215,24 +220,26 @@ class npc:
                 attack_roll = attack_roll * 0.5
                 attacker.receive_damage(attack_roll)
             if roll_to_attack >= roll_to_defend:
-                print("Success!")
+                print("\nSuccess!")
                 defender.receive_damage(attack_roll)
             else:
-                print(f"{defender.name} gets out of the way!")
+                typing(f"{defender.name} gets out of the way!")
             turns = turns[::-1]
             if self.hp <= 0:
                 winner = p2
                 loser = self
-                print(f"{self.name} has died, {p2.name} is victorious!")
-                print("Battle is over.")
+                typing(f"{self.name} has died, {p2.name} is victorious!")
+                typing("Battle is over.")
                 break
             elif p2.hp <= 0:
                 winner = self
                 loser = p2
-                print(f"{p2.name} has died, {self.name} is victorious!")
-                print("Battle is over.")
+                typing(f"{p2.name} has died, {self.name} is victorious!")
+                time.sleep(0.2)
+                print("\nBattle is over.")
                 break
-            print("----------------------------------------------------------------")
+            print("\n----------------------------------------------------------------")
+
         winner.gain_xp(loser.xp)
         winner.money_transaction(loser.wealth, op="gain")
         if loser.alignment == "evil":

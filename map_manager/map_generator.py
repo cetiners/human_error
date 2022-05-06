@@ -1,9 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from pmdarima import c
+from skimage.draw import polygon as ployg
 from character_engine.player_character import npc
 from scipy.spatial import Voronoi, voronoi_plot_2d,  cKDTree
-from lloyd_relaxation import relax, voronoi
+from map_manager.lloyd_relaxation import relax, voronoi
+from map_manager.noise import blurry_lines, toddler
+import matplotlib.pyplot as plt
+import matplotlib.colors
 import random
+import json
+
 
 
 class map():
@@ -11,12 +18,14 @@ class map():
     def __init__(self, name="Map", size=1024):
         self.name = name
         self.size = size
+        self.seed = 7611072
 
         # Initialize map with an array of zeros.
         self.coord = np.zeros((self.size,self.size),dtype="int")
 
         self.location_coordinates = {}
         self.location_events = {}
+        self.views = {}
         self.vors = {}
 
         self.interactions = {}
@@ -26,7 +35,7 @@ class map():
         # Return random a random coordinate
         return [random.uniform(0.1,float(self.size)) for i in range(2)]
 
-    def populate_map(self, n_locations=512, name="Regions", is_event=False, print=False, relaxed=True,k=10):
+    def populate_map(self, n_locations=512, name="Regions", blurred=True, is_event=False, relaxed=True,k=10, mask=False):
 
         # Place centroids to be used as region centres.
         centroids = np.random.randint(0,self.size, (n_locations+2, 2))
@@ -34,36 +43,62 @@ class map():
         # Generate Voronoi regions (All points closer to one specific centroid is in a region.)
 
         if relaxed:
+
             centroids = relax(centroids,self.size,k=10)
 
         edge_points = self.size*np.array([[-1, -1], [-1, 2], [2, -1], [2, 2]])
 
         new_centroids = np.vstack([centroids, edge_points])
-
+        
         vor = Voronoi(new_centroids)
 
-        if print:
-            fig = voronoi_plot_2d(vor, show_vertices=False, line_colors='black',line_width=0.5, line_alpha=0.6, point_size=1)
-            fig.set_size_inches(18.5, 10.5)
-            for region in vor.regions:
-                if not -1 in region:
-                    polygon = [vor.vertices[i] for i in region]
-                    plt.fill(*zip(*polygon),alpha=0.4)
-                    plt.xlim(right=0, left=self.size)
-                    plt.ylim(bottom=0, top=self.size)
+    # Calculate Voronoi map
+        vor_map = np.zeros((self.size, self.size), dtype=np.uint32)
+
+        for i, region in enumerate(vor.regions):
+            # Skip empty regions and infinte ridge regions
+            if len(region) == 0 or -1 in region: continue
+            # Get polygon vertices    
+            x, y = np.array([vor.vertices[i][::-1] for i in region]).T
+            # Get pixels inside polygon
+            rr, cc = ployg(x, y)
+            # Remove pixels out of image bounds
+            in_box = np.where((0 <= rr) & (rr < self.size) & (0 <= cc) & (cc < self.size))
+            rr, cc = rr[in_box], cc[in_box]
+            # Paint image
+            vor_map[rr, cc] = i
+        
+        if blurred:
+            self.views[name] = blurry_lines(vor_map)
+        else:
+            self.views[name] = vor_map
+        
+
+#        if print:
+#            fig = voronoi_plot_2d(vor, show_vertices=False, line_colors='black',line_width=0.5, line_alpha=0.6, point_size=1)
+#            fig.set_size_inches(18.5, 10.5)
+#            for region in vor.regions:
+#                if not -1 in region:
+#                    polygon = [vor.vertices[i] for i in region]
+#                    plt.fill(*zip(*polygon),alpha=0.4)
+#                    plt.xlim(right=0, left=self.size)
+#                    plt.ylim(bottom=0, top=self.size)
+
+        if mask:
+            mask = toddler(size=1024, seed=random.randint(1,100),res=2, octaves = 20, persistence = 0.60, lacunarity = 2,mask=True)
+            self.views[name] *= mask
 
         self.vors[name] = vor
         self.location_coordinates[name] = vor.points
         self.location_events[name] = is_event
         
-        return vor
+        return self.views[name]
 
     def event_starter(self, event, player):
-        location = player.location
 
         if event == "ambush":
-            goblin = npc("Grognag",self,xp=20,p_health=15)
-            player.battle(goblin, "Goblin Ambush")
+            goblin = npc("Dark figure",self,xp=20,p_health=15)
+            player.battle(goblin, "Demo fight")
 
 
     def check_region(self,coordinates):
@@ -96,4 +131,27 @@ class map():
             plt.ylim(bottom=0, top=self.size)
         
         return types
+
+    def print_map(self,name):
+        with open('/Users/cetiners/Desktop/Thesis/human_error/tools/utils.txt') as f:
+            pcolors = f.read()
+
+        pcolors = json.loads(pcolors)
         
+        cvals  = pcolors[name][0]
+        colors  = pcolors[name][1]
+            
+        tuples = list(zip(cvals, colors))
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", tuples)
+        
+        fig, ax = plt.subplots(1,1)
+        fig.set_dpi(150)
+        fig.set_size_inches(20, 14)
+        ax.imshow(self.views[name],cmap)
+
+
+  
+# reading the data from the file
+
+        
+# reconstructing the data as a dictionary
