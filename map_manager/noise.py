@@ -2,7 +2,7 @@ from re import T
 import noise
 import numpy as np
 
-def toddler(size, res=32, seed=150,  octaves = 8, persistence=0.6, lacunarity = 2, mask=False):
+def toddler(size, res=32, seed=200,  octaves = 8, persistence=0.6, lacunarity = 2, mask=False):
     scale = size/res
 
     if mask:
