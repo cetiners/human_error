@@ -1,0 +1,4 @@
+
+
+- Fine-tune noise map params for different views (Civ)
+- Seemles mask method for the seas

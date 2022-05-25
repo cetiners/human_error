@@ -8,19 +8,45 @@ view_noises = {
 # number of different types, [rain,heat] , 0 (min) - 2 (max)
     "terrain" : { 
         "atr" :{
-            "tundra"         : [0,0] ,
-            "rainforest"     : [2,2] ,
-            "desert"         : [0,2] ,
-            "grassland"      : [1,1] ,
-            "mountain/rocky" : [1,0] ,
-            "forest"         : [1,2] ,
-            "wetland"        : [2,1] ,
-            "drought"        : [0,1] ,
-            "mountain/forest" : [2,0]
+            "tundra"            : [[0,0]] ,
+            "rainforest"        : [[2,2]] ,
+            "desert"            : [[0,2]] ,
+            "grassland"         : [[1,1]] ,
+            "mountain/rocky"    : [[1,0]] ,
+            "forest"            : [[1,2]] ,
+            "wetland"           : [[2,1]] ,
+            "drought"           : [[0,1]] ,
+            "mountain/forest"   : [[2,0]]
             },
         "interval" : 3,
         "atr_names": ["rain","heat"],
         "atr_list" : ["tundra","rainforest","desert","grassland","mountain/rocky","forest","wetland","drought","mountain/forest"]
+    },
+    "civilisation" : { 
+        "atr" :{
+            "ruins"         : [[0,2],[0,1]],   
+            "metropol"      : [[2,2]],       
+            "city"          : [[2,1],[1,2],[2,0]],       
+            "town"          : [[1,1]],   
+            "outpost"       : [[1,0]],       
+            "wild"          : [[0,0]],           
+            },
+        "interval" : 3,
+        "atr_names": ["population","history"],
+        "atr_list" : ["ruins","metropol","city","town","outpost","wild"]
+    },
+    "threat" : { 
+        "atr" :{
+            "very_high" : [[5,5]],   
+            "high"      : [[4,4]],       
+            "medium"    : [[3,3]],       
+            "low"       : [[2,2]],   
+            "very_low"  : [[1,1]],       
+            "safe"      : [[0,0]],           
+            },
+        "interval" : 6,
+        "atr_names": ["threat","threat"],
+        "atr_list" : ["very_high","high","medium","low","very_low","safe"]
     }
  }
 

@@ -7,6 +7,7 @@ from scipy.spatial import Voronoi, voronoi_plot_2d,  cKDTree
 from map_manager.map_attributer import average_cells, fill_cells, histeq, view_noises
 from map_manager.lloyd_relaxation import relax, voronoi
 from map_manager.noise import blurry_lines, toddler
+from tools.utils import map_attribute_checker
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import random
@@ -95,29 +96,32 @@ class map():
         
         return self.views[name]
 
-    def view_attributer(self,double=True,seed_1=20,seed_2=30,attr_names=[],alpha=0.33, map_name=""):
+    def attribute_view(self,double=True,seed_1=20,seed_2=30,attr_names=[],alpha=0.33, map_name="", view_name=""):
 
         size = self.size
 
         map_1 = toddler(size, 2, seed_1)
         uniform_map_1 = histeq(map_1, alpha=alpha)
-    
         cells_1 = average_cells(self.views[map_name], uniform_map_1)
         map_1 = fill_cells(self.views[map_name], cells_1)
-    
         map_1_range = [np.amax(map_1),np.amin(map_1)]
-    
+
         if double:
-        
+
             map_2 = toddler(size, 2, seed_2)
             uniform_map_2 = histeq(map_2, alpha=alpha)
-            
-            cells_2 = average_cells(self.views[map_name], uniform_map_2)         
+            cells_2 = average_cells(self.views[map_name], uniform_map_2)
             map_2 = fill_cells(self.views[map_name], cells_2)
-            
             map_2_range = [np.amax(map_2),np.amin(map_2)]
-    
-        return map_1, map_2, map_1_range, map_2_range
+
+        else:
+            map_2 = " "
+            map_2_range = " "
+
+        attributed_map = map_attribute_checker(map_1, map_2, map_1_range, map_2_range,map_name=map_name, double=double)
+        self.views[view_name] = attributed_map
+
+        return attributed_map
 
 
     def land_mask(self,name,seed=random.randint(1,100),res=2, octaves = 20, persistence = 0.60, lacunarity = 2):

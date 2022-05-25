@@ -101,7 +101,7 @@ Faction owned: No
 Trade: No
 Encounters: Cult, Researcher, Party people
 
-City: 
+Metropol: 
 
 Population: High
 Historical: High
@@ -109,6 +109,15 @@ Chance of wild encounters: Low
 Faction owned: Yes
 Trade: Yes
 Encounters: Pickpocket, Politician, Racist man, Philasopher, Crook, Street kids, Sick person, Snobs, Toilet man
+
+City
+
+Population: High
+Historical: Medium
+Chance of wild encounters: Low
+Faction owned: Yes
+Trade: Yes
+Encounters: Pickpocket, Racist man, Crook, Street kids, Sick person, Corrupt enforcers, Toilet man
 
 Town: 
 
