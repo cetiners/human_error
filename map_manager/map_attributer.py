@@ -5,35 +5,30 @@ import numpy as np
 
 
 view_noises = {
-# number of different types, [rain,heat] , 0 (min) - 2 (max)
     "terrain" : { 
         "atr" :{
             "tundra"            : [[0,0]] ,
             "rainforest"        : [[2,2]] ,
-            "desert"            : [[0,2]] ,
-            "grassland"         : [[1,1]] ,
-            "mountain/rocky"    : [[1,0]] ,
-            "forest"            : [[1,2]] ,
-            "wetland"           : [[2,1]] ,
-            "drought"           : [[0,1]] ,
-            "mountain/forest"   : [[2,0]]
+            "desert"            : [[0,2],[0,1]] ,
+            "grassland"         : [[1,1],[2,1]],
+            "mountain"          : [[1,0],[2,0]] ,
+            "forest"            : [[1,2]]
             },
         "interval" : 3,
         "atr_names": ["rain","heat"],
-        "atr_list" : ["tundra","rainforest","desert","grassland","mountain/rocky","forest","wetland","drought","mountain/forest"]
+        "atr_list" : ["tundra","rainforest","desert","grassland","mountain","forest"]
     },
     "civilisation" : { 
         "atr" :{
-            "ruins"         : [[0,2],[0,1]],   
+            "ruins"         : [[0,2]],   
             "metropol"      : [[2,2]],       
             "city"          : [[2,1],[1,2],[2,0]],       
-            "town"          : [[1,1]],   
-            "outpost"       : [[1,0]],       
-            "wild"          : [[0,0]],           
+            "town"          : [[1,1]],      
+            "wild"          : [[0,0],[0,1],[1,0]],           
             },
         "interval" : 3,
         "atr_names": ["population","history"],
-        "atr_list" : ["ruins","metropol","city","town","outpost","wild"]
+        "atr_list" : ["ruins","metropol","city","town","wild"]
     },
     "threat" : { 
         "atr" :{
@@ -47,8 +42,22 @@ view_noises = {
         "interval" : 6,
         "atr_names": ["threat","threat"],
         "atr_list" : ["very_high","high","medium","low","very_low","safe"]
+    },
+    "faction" : { 
+        "atr" :{
+            "fac1_main"      :  [[2,0]],   
+            "fac1_ext"       :  [[2,1],[1,0]],       
+            "fac2_main"      :  [[0,2]],       
+            "fac2_ext"       :  [[1,2],[0,1]],
+            "warzone"        :  [[1,1],[2,2]],
+            "undisputed"     :  [[0,0]]
+            },
+        "interval" : 3,
+        "atr_names": ["fac1","fac2"],
+        "atr_list" : ["fac1_main","fac1_ext","fac2_main","fac2_ext","warzone","undisputed"]
+
     }
- }
+}
 
 def histeq(img,  alpha=1):
     img_cdf, bin_centers = exposure.cumulative_distribution(img)

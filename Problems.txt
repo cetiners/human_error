@@ -2,3 +2,21 @@
 
 - Fine-tune noise map params for different views (Civ)
 - Seemles mask method for the seas
+
+- Friendly animal random placement
+- Hostile animal random placement
+- Natural encounter random placement
+- Special encounter random placement
+- Trader random placement
+- Settlement random placement
+- Capitols random placement
+
+- Friendly animal fitness function
+- Hostile animal fitness function
+- Natural encounter fitness function
+- Special encounter fitness function
+- Trader fitness function
+- Settlement fitness function
+- Capitols fitness function
+
+- Placement xo, mutation

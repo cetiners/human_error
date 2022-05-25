@@ -1,16 +1,14 @@
+from map_manager.map_generator import *
+from genetic_algorithm import *
 
-from character_engine.player_character import npc
-from map_manager.map_generator import map
+nw = map()
 
-portugal = map()
+nw.populate_map(n_locations=1024, name="terrain",relaxed=True,k=100)
+nw.populate_map(n_locations=1024, name="civilisation",relaxed=True,k=100)
+nw.populate_map(n_locations=1024, name="threat",relaxed=True, k=100)
+nw.populate_map(n_locations=1024, name="faction",relaxed=True, k=100)
 
-portugal.populate_map(250, name="ambush", is_event=True)
-
-mauro = npc("Mauro",portugal,xp = 1000,p_type="player")
-
-possible_terrains = {"Water":"#3396ff","Mountains":"#a7a7a7","Grassland":"#53e939"}
-portugal.create_regions("ambush", possible_terrains, [0.2,0.3,0.5])
-
-a = portugal.location_coordinates["ambush"][3]
-
-mauro.travel(a)
+nw.attribute_view(seed_1=20,seed_2=30,map_name="terrain",view_name="terrain")
+nw.attribute_view(seed_1=40,seed_2=50,map_name="civilisation",view_name="civilisation")
+nw.attribute_view(seed_1=34,seed_2=34,map_name="threat",view_name="threat",double=False)
+nw.attribute_view(seed_1=34,seed_2=34,map_name="faction",view_name="faction",double=True)

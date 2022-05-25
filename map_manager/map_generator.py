@@ -15,7 +15,7 @@ import json
 
 
 
-class map():
+class map:
 
     def __init__(self, name="Map", size=1024):
         self.name = name
