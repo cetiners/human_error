@@ -147,9 +147,6 @@ Faction owned: No
 Trade: No
 
 
-
-
-
 ## DANGER VIEW
 
 Depicts the unscripted dangers of the world, chance of player being attacked or be affected by the unnatural effects. Danger heatmap depicts the possibilities of world
