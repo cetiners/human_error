@@ -51,7 +51,14 @@ encounter_biomes ={
 }
 
 class w_encounter:
+
+    """
+        Handles placements for the world encounters, given the map. Checks the appropriate map placements 
+        considering biomes, danger level and civilisation to calculate the appropriate fitness.
+    """
+
     def __init__(self,map,size=1024,type="",encounter_type=""):
+
         self.coord = [round(random.uniform(0, size),1) for i in range(2)]
         self.check_coor = [int(i) for i in self.coord]
 
@@ -72,6 +79,12 @@ class w_encounter:
             self.fitness = fitness
 
 class pack:
+
+    """
+        Creates a set or a "pack" of w_encounter individuals, returns a list of individuals within
+        the pack and their individual fitnesses
+    """
+
     def __init__(self,map,type="",size=25,encounter_type=""):
 
         self.pack = []
