@@ -66,7 +66,9 @@ def histeq(img,  alpha=1):
     return alpha * img_eq + (1 - alpha) * img
 
 def average_cells(vor, data):
+
     """Returns the average value of data inside every voronoi cell"""
+    
     size = vor.shape[0]
     count = np.max(vor)+1
 
