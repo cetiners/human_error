@@ -18,7 +18,7 @@ encounter_biomes ={
 "hostile_animals" : {
 
     "tundra"        : ["wolf","bear"],
-    "rainforest"   : ["tiger", "jaguar", "snake", "poison_dart_Frog", "fire_ant", "mosquitos"],
+    "rainforest"   : ["tiger", "jaguar", "snake", "poison_dart_frog", "fire_ant", "mosquitos"],
     "desert"       : ["bobcat", "lion", "coyote", "rattlesnake", "eagle", "scorpion"],
     "grassland"    : ["dog","wolf"],
     "mountain"     : ["bear", "mountain_lion", "leopard", "wolverine"], 
@@ -32,7 +32,7 @@ encounter_biomes ={
     "rainforest"   : ["overgrowth", "spiky_canopy", "maze", "flood"],
     "desert"       : ["sand_dune", "quicksand"],
     "grassland"    : [],
-    "mountain"     : ["thunderstorm", "avalanche", "cliff", "ravine"], 
+    "mountain"     : ["thunderstorm", "avalanche", "cliff", "ravine"],
     "forest"       : ["fallen_tree"]
 
 },
@@ -65,19 +65,37 @@ class w_encounter:
         self.type = type
         self.size = size
         
+    #    fitness = 0
+    #    civ = self.map.views["civilisation"][self.check_coor[0],self.check_coor[1]]
+    #    biome = view_noises["terrain"]["atr_list"][(int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]]))]
+#
+    #    if (civ == 0) | (civ != 4):
+    #        fitness -= 1000
+#
+    #    biomes = encounter_biomes[self.encounter_type]
+#
+    #    if type not in biomes[biome]:
+    #        fitness -= 1000
+
+        self.fitness = self.check_fitness()
+
+    def check_fitness(self):
+
         fitness = 0
+        
         civ = self.map.views["civilisation"][self.check_coor[0],self.check_coor[1]]
         biome = view_noises["terrain"]["atr_list"][(int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]]))]
-
+        
         if (civ == 0) | (civ != 4):
             fitness -= 1000
 
         biomes = encounter_biomes[self.encounter_type]
-
+        
         if type not in biomes[biome]:
             fitness -= 1000
-
         self.fitness = fitness
+
+        return fitness
 
 
 class pack:
@@ -95,4 +113,4 @@ class pack:
             ind = w_encounter(map=map,type=type,encounter_type=encounter_type)
             self.pack.append(ind)
 
-        self.pack_fitness = [ind.fitness for ind in self.pack]
+        self.pack_fitness = [ind.check_fitness() for ind in self.pack]
