@@ -26,7 +26,15 @@ def partially_mapped_xo(parent_1,parent_2):
     offspring_1 = copy.deepcopy(parent_1)
     offspring_2 = copy.deepcopy(parent_2)
     
-    cut_points = sorted([random.randint(0,len(parent_1_coor)) for i in range(2)])
+    cut_points = [random.randint(0,len(parent_1_coor))-1]
+
+    second_cut = random.randint(0,len(parent_1_coor)-1)
+    
+    while second_cut == cut_points[0]:
+        second_cut = random.randint(0,len(parent_1_coor)-1)
+    
+    cut_points.append(second_cut)
+    cut_points = sorted(cut_points)
 
     new_coord_1 = parent_1_coor.copy()
     new_coord_2 = parent_2_coor.copy()
@@ -39,5 +47,14 @@ def partially_mapped_xo(parent_1,parent_2):
     for i in range(len(offspring_1.pack)):
 
         offspring_1.pack[i].coord = new_coord_1[i]
+
+    
+    offspring_1.update_pack_coord()
+    offspring_2.update_pack_coord()
+    offspring_1.update_pack_fitness()
+    offspring_2.update_pack_fitness()
+
+    #offspring_1.pack_coord = new_coord_1
+    #offspring_2.pack_coord = new_coord_2
 
     return offspring_1, offspring_2
