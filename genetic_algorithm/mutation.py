@@ -18,6 +18,6 @@ def inversion_mutation(pack):
     pack.update_pack_coord()
     pack.update_pack_fitness()
     
-    return mutated
+    return pack
 
  

@@ -1,7 +1,11 @@
 import random
 import time
 import csv
+from operator import attrgetter
 from map_manager.map_attributer import *
+from genetic_algorithm.crossover import *
+from genetic_algorithm.mutation import *
+from genetic_algorithm.selection  import *
 
 
 encounter_biomes ={
@@ -132,111 +136,94 @@ class pack_population:
         self.population = []
         self.gen = 1
         self.timestamp = int(time.time())
+        self.size = pop_size
 
         for _ in range(pop_size):
 
             self.population.append(pack(map,type,pack_size,encounter_type))
 
-    def evolve(self,gens):
+    def evolve(self,gens,mu_p=0.01):
 
         for gen in range(1,gens+1):
             
             new_pop = []
+
             print('\nGen', self.gen, 'evolving:')
             
             while len(new_pop) < self.size:
-                
-                different=False
-                
-                # checking if they are different parents
-                while different==False:
 
-                    if sel_type==1:
-                        parent1, parent2 = fps(self), fps(self)
-                    
-                    parent1, parent2 = select(self), select(self)
+                used_parents = []
+                suitable = False
 
-                    if (parent1.get_model_weights()[0]==parent2.get_model_weights()[0]).all()==False:
-                         # if there are differences on the first matrix then they're different (lighter check)
-                        different=True
-                
+                # Check if parents are eligible and used.
+                while not suitable:
+
+                    parent1,parent2 = fps(self), fps(self)
+
+                    if (parent1 in used_parents):
+
+                        suitable = False
+
+                    elif (parent2 in used_parents):
+
+                        suitable = False
+
+                    else:
+                        suitable = True
+                        used_parents.append(parent1)
+                        used_parents.append(parent2)
                 
                 # to assess if things are going well:
-                print('Parent1:', parent1)
-                print('Parent2:', parent2,'\n')
                 
                 # Crossover
                 
-                # Since our crossover functions are implemented to work with the weight arrays of matrixes, we call for each parent the
-#                # get_model_weights method - so we can extract the weights without the bias values
-#                
-#                
-#                
-#                if random.random() < co_p:
-#                    offspring1, offspring2 = crossover(parent1.get_model_weights(), parent2.get_model_weights()) 
-#                else:
-#                    offspring1, offspring2 = parent1.get_model_weights(), parent2.get_model_weights()
-#                    
-#                # Mutation
-#                if random.random() < mu_p:
-#                    offspring1 = mutate(offspring1)
-#                if random.random() < mu_p:
-#                    offspring2 = mutate(offspring2)
-# 
-#                new_pop.append(Individual(units = self.indiv_units, weights = offspring1))
-#                
-#                if len(new_pop) < self.size:
-#                    new_pop.append(Individual(units = self.indiv_units, weights = offspring2))
-# 
-#            if elitism == True:
-#                if self.optim == "max":
-#                    least = min(new_pop, key=attrgetter("fitness"))
-#                elif self.optim == "min":
-#                    least = max(new_pop, key=attrgetter("fitness"))
-#                    
-#                new_pop.pop(new_pop.index(least))
-#                new_pop.append(elite)
-#
-#            self.log()
-#            self.individuals = new_pop
-#
-#            if self.optim == "max":
-#                
-#                best_individual = max(self, key=attrgetter("fitness"))
-#
-#                print(f'Best Individual: {best_individual}')
-#                
-#            elif self.optim == "min":
-#                
-#                best_individual = min(self, key=attrgetter("fitness"))
-#                
-#                print(f'Best Individual: {min(self, key=attrgetter("fitness"))}')            
-            self.gen += 1
-        pass
+                
+                offspring1, offspring2 = partially_mapped_xo(parent1, parent2) 
+                    
+                # Mutation
 
-    def log(self):
-        
-        '''
-        To register the evolution process - a csv is saved with the following info for each pack:
-        
-        Generation | Type | Individual Fitness | Individual Coordinates
-            
-        This will be useful for report analysis of results
-        
-        '''
-        
-        with open(f'run_{self.timestamp}.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
-            for i in self:
+                if random.random() < mu_p:
+                    offspring1 = inversion_mutation(offspring1)
+                if random.random() < mu_p:
+                    offspring2 = inversion_mutation(offspring2)
+#   
+                new_pop.append(offspring1)
+
+                if len(new_pop) < self.size:
+                    new_pop.append(offspring2)
+
+#           self.log()
+            self.population = new_pop
+                
+            best_individual = max(self.population, key=operator.attrgetter('pack_fitness'))
+
+            print(f'Best Individual: {best_individual.pack_fitness}')      
+
+            self.gen += 1
+
+    #def log(self):
+    #    
+    #    '''
+    #    To register the evolution process - a csv is saved with the following info for each pack:
+    #    
+    #    Generation | Type | Individual Fitness | Individual Coordinates
+    #        
+    #    This will be useful for report analysis of results
+    #    
+    #    '''
+    #    
+    #    with open(f'run_{self.timestamp}.csv', 'a', newline='') as file:
+    #        writer = csv.writer(file)
+    #        for i in self:
 #                writer.writerow([self.gen, i.units, i.fitness, i.score])
 
-    def __len__(self):
-        return len(self.individuals)
-
-    def __getitem__(self, position):
-        return self.individuals[position]
-
-    def __repr__(self):
-        return f"Population(size={len(self.individuals)})"
+    #def __len__(self):
+    #    return len(self.individuals)
+#
+    #def __getitem__(self, position):
+    #    return self.individuals[position]
+#
+    #def __repr__(self):
+#        return f"Population(size={len(self.individuals)})"
 
 

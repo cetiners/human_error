@@ -1,5 +1,6 @@
 
 from map_manager.world_encounters import *
+import random
 import copy
 
 
