@@ -1,7 +1,9 @@
 import random
 import time
 import csv
+import pickle
 from operator import attrgetter
+from unittest.mock import seal
 from map_manager.map_attributer import *
 from genetic_algorithm.crossover import *
 from genetic_algorithm.mutation import *
@@ -64,7 +66,7 @@ class w_encounter:
 
     def __init__(self,map,size=1024,type="",encounter_type=""):
 
-        self.coord = [round(random.uniform(0, size),1) for i in range(2)]
+        self.coord = [round(random.uniform(0, size-1),1) for i in range(2)]
         self.check_coor = [int(i) for i in self.coord]
         self.map = map
         self.encounter_type = encounter_type
@@ -76,14 +78,26 @@ class w_encounter:
         
         self.check_coor = [int(i) for i in self.coord]
         fitness = 0
+
+        # Check the biome number from the terrain list
         
         civ = self.map.views["civilisation"][self.check_coor[0],self.check_coor[1]]
 
-        biome = view_noises["terrain"]["atr_list"][(int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]]))]
+        # Reverse check the key to see the name of the biome
+
+        biome = view_noises["terrain"]["atr_list"][(int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]])-1)]
+
+        # Discourage from placing in the sea
+        if (int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]])) == 0:
+            fitness -= 10000
+
+        # if location is in the developed regions
         
         if (civ == 0) | (civ != 4):
 
             fitness -= 1000
+
+        # check if the biome is correct
 
         biomes = encounter_biomes[self.encounter_type]
         
@@ -106,6 +120,7 @@ class pack:
     def __init__(self,map,type="",size=25,encounter_type=""):
 
         self.pack = []
+        self.size = size
         
         for _ in range(size):
             ind = w_encounter(map=map,type=type,encounter_type=encounter_type)
@@ -137,12 +152,15 @@ class pack_population:
         self.gen = 1
         self.timestamp = int(time.time())
         self.size = pop_size
+        self.best_inds = {}
+        self.pack_size = pack_size
+        self.encounter_type = encounter_type
 
         for _ in range(pop_size):
 
             self.population.append(pack(map,type,pack_size,encounter_type))
 
-    def evolve(self,gens,mu_p=0.01):
+    def evolve(self,gens,mu_p=0.01,test=False,save=False):
 
         for gen in range(1,gens+1):
             
@@ -158,7 +176,7 @@ class pack_population:
                 # Check if parents are eligible and used.
                 while not suitable:
 
-                    parent1,parent2 = fps(self), fps(self)
+                    parent1,parent2 = rank_selection(self)
 
                     if (parent1 in used_parents):
 
@@ -176,14 +194,22 @@ class pack_population:
                 # to assess if things are going well:
                 
                 # Crossover
-                
-                
-                offspring1, offspring2 = partially_mapped_xo(parent1, parent2) 
+
+                offspring1, offspring2 = partially_mapped_xo(parent1, parent2)
+
+                # Completely random new pack individual is generated every 50 generations to avoid local minimums
+
+                if gen // 50:
+                    offspring1 = pack(map,type,self.pack_size,self.encounter_type)
+
+                if test:
+                    return offspring1,offspring2
                     
                 # Mutation
 
                 if random.random() < mu_p:
                     offspring1 = inversion_mutation(offspring1)
+
                 if random.random() < mu_p:
                     offspring2 = inversion_mutation(offspring2)
 #   
@@ -197,25 +223,32 @@ class pack_population:
                 
             best_individual = max(self.population, key=operator.attrgetter('pack_fitness'))
 
-            print(f'Best Individual: {best_individual.pack_fitness}')      
+            self.best_inds[gen] = best_individual
 
+            print(f'Best Individual: {best_individual.pack_fitness}')
+
+            if save:
+                picklefile = open(f'{self.timestamp}', 'wb')
+                pickle.dump(self, picklefile)
+                picklefile.close()
+      
             self.gen += 1
 
-    #def log(self):
-    #    
-    #    '''
-    #    To register the evolution process - a csv is saved with the following info for each pack:
-    #    
-    #    Generation | Type | Individual Fitness | Individual Coordinates
-    #        
-    #    This will be useful for report analysis of results
-    #    
-    #    '''
-    #    
-    #    with open(f'run_{self.timestamp}.csv', 'a', newline='') as file:
-    #        writer = csv.writer(file)
-    #        for i in self:
-#                writer.writerow([self.gen, i.units, i.fitness, i.score])
+#    def log(self):
+#        
+#        '''
+#        To register the evolution process - a csv is saved with the following info for each pack:
+#        
+#        Generation | Type | Individual Fitness | Individual Coordinates
+#            
+#        This will be useful for report analysis of results
+#        
+#        '''
+#        
+#        with open(f'run_{self.timestamp}.csv', 'a', newline='') as file:
+#            writer = csv.writer(file)
+#            for i in self:
+#               writer.writerow([self.gen, i., i.fitness, i.score])
 
     #def __len__(self):
     #    return len(self.individuals)

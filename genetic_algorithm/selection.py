@@ -1,39 +1,49 @@
 import operator
-from random import uniform
-
-
-#def fps(population):
-#    min_fitness = min(population.population, key=operator.attrgetter('pack_fitness')).pack_fitness
-#
-#    # Sum total fitnesses with adjustment
-#    total_fitness = 
-#
-#    # Get a 'position' on the wheel
-#    spin = uniform(0, total_fitness)
-#    
-#    position = 0
-#
-#    # Find individual in the position of the spin
-#
-#    for individual in population.population:
-#
-#        position += individual.pack_fitness
-#
-#        if position > spin:
-#
-#            return individual    
-#
-
 import numpy.random as npr
 
 def fps(population):
 
-    min_val = min(population.population, key=operator.attrgetter('pack_fitness')).pack_fitness
+    #min_val = min(population.population, key=operator.attrgetter('pack_fitness')).pack_fitness
+    max = sum([i.pack_fitness for i in population.population])
 
-    max = sum([i.pack_fitness + abs(min_val) for i in population.population])
+    if max == 0:
 
-    selection_probs = [(c.pack_fitness + abs(min_val))/max for c in population.population]
+        selected_individual_1 = population.population[npr.choice(len(population.population))]
+        selected_individual_2 = population.population[npr.choice(len(population.population))]
 
-    selected_individual = population.population[npr.choice(len(population.population), p=selection_probs)]
+        while selected_individual_1 == selected_individual_2:
+
+            selected_individual_2 = population.population[npr.choice(len(population.population))]
     
-    return selected_individual
+    else:
+        selection_probs = [c.pack_fitness/max for c in population.population]
+        selection_probs = [1-i for i in selection_probs]
+
+        selected_individual_1 = population.population[npr.choice(len(population.population), p=selection_probs)]
+        selected_individual_2 = population.population[npr.choice(len(population.population), p=selection_probs)]
+
+        while selected_individual_1 == selected_individual_2:
+            selected_individual_2 = population.population[npr.choice(len(population.population), p=selection_probs)]
+    
+    return selected_individual_1, selected_individual_2
+
+
+def rank_selection(population):
+
+    ranked_pop = sorted(population.population, key=operator.attrgetter('pack_fitness'))
+    
+    rank_sum = (population.size * (population.size +1) / 2)
+
+    selection_p = []
+
+    for rank, _ in enumerate(ranked_pop):
+
+        selection_p.append((rank+1)/rank_sum)
+
+    selected_individual_1 = ranked_pop[npr.choice(population.size, p=selection_p)]
+    selected_individual_2 = ranked_pop[npr.choice(population.size, p=selection_p)]
+
+    while selected_individual_1 == selected_individual_2:
+        selected_individual_2 = ranked_pop[npr.choice(population.size, p=selection_p)]
+
+    return selected_individual_1, selected_individual_2

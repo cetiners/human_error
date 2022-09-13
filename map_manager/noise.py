@@ -23,7 +23,9 @@ def toddler(size, res=32, seed=200,  octaves = 8, persistence=0.6, lacunarity = 
     ])
 
     if mask:
-        map = map > 0
+        for idx, i in enumerate(map):
+            map[idx][map[idx] > 0 ] = 1
+            map[idx][map[idx] <= 0] = 0
         
     return map
 

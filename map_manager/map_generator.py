@@ -55,6 +55,7 @@ class map:
         vor = Voronoi(new_centroids)
 
     # Calculate Voronoi map
+
         vor_map = np.zeros((self.size, self.size), dtype=np.uint32)
 
         for i, region in enumerate(vor.regions):
@@ -74,21 +75,6 @@ class map:
             self.views[name] = blurry_lines(vor_map)
         else:
             self.views[name] = vor_map
-        
-
-#        if print:
-#            fig = voronoi_plot_2d(vor, show_vertices=False, line_colors='black',line_width=0.5, line_alpha=0.6, point_size=1)
-#            fig.set_size_inches(18.5, 10.5)
-#            for region in vor.regions:
-#                if not -1 in region:
-#                    polygon = [vor.vertices[i] for i in region]
-#                    plt.fill(*zip(*polygon),alpha=0.4)
-#                    plt.xlim(right=0, left=self.size)
-#                    plt.ylim(bottom=0, top=self.size)
-
-#        if mask:
-#            mask = toddler(size=1024, seed=random.randint(1,100),res=2, octaves = 20, persistence = 0.60, lacunarity = 2,mask=True)
-#            self.views[name] *= mask
 
         self.vors[name] = vor
         self.location_coordinates[name] = vor.points
@@ -124,11 +110,19 @@ class map:
         return attributed_map
 
 
-    def land_mask(self,name,seed=random.randint(1,100),res=2, octaves = 20, persistence = 0.60, lacunarity = 2):
-
+    def land_mask(self):
+        
+        seed=random.randint(1,100)
+        res=2
+        octaves = 15
+        persistence = 0.60
+        lacunarity = 2
         mask = toddler(size=1024, seed=seed,res=res, octaves = octaves, persistence = persistence, lacunarity = lacunarity,mask=True)
-        self.views[name] *= mask
 
+        for view in self.views:
+            self.views[view] += 1
+            self.views[view] *= mask
+    
     def event_starter(self, event, player):
 
         if event == "ambush":
@@ -183,10 +177,3 @@ class map:
         fig.set_dpi(150)
         fig.set_size_inches(20, 14)
         ax.imshow(self.views[name],cmap)
-
-
-  
-# reading the data from the file
-
-        
-# reconstructing the data as a dictionary
