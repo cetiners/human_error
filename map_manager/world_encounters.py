@@ -88,12 +88,14 @@ class w_encounter:
         biome = view_noises["terrain"]["atr_list"][(int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]])-1)]
 
         # Discourage from placing in the sea
+
         if (int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]])) == 0:
+            
             fitness -= 10000
 
         # if location is in the developed regions
         
-        if (civ == 0) | (civ != 4):
+        if (civ == 0) | (civ == 4):
 
             fitness -= 1000
 
@@ -127,11 +129,11 @@ class pack:
             self.pack.append(ind)
 
         self.pack_coord =  [ind.coord for ind in self.pack]
-        self.pack_fitness = sum(i for i in [ind.check_fitness() for ind in self.pack] if i < 0)
+        self.pack_fitness = sum(i for i in [ind.check_fitness() for ind in self.pack])
 
 
     def update_pack_fitness(self):
-        self.pack_fitness = sum(i for i in [ind.check_fitness() for ind in self.pack] if i < 0)
+        self.pack_fitness = sum(i for i in [ind.check_fitness() for ind in self.pack])
 
         return self.pack_fitness
 
@@ -150,10 +152,12 @@ class pack_population:
         
         self.population = []
         self.gen = 1
+        self.map = map
         self.timestamp = int(time.time())
         self.size = pop_size
         self.best_inds = {}
         self.pack_size = pack_size
+        self.type = type
         self.encounter_type = encounter_type
 
         for _ in range(pop_size):
@@ -195,12 +199,7 @@ class pack_population:
                 
                 # Crossover
 
-                offspring1, offspring2 = partially_mapped_xo(parent1, parent2)
-
-                # Completely random new pack individual is generated every 50 generations to avoid local minimums
-
-                if gen // 50:
-                    offspring1 = pack(map,type,self.pack_size,self.encounter_type)
+                offspring1, offspring2 = ax_pmx(parent1, parent2)
 
                 if test:
                     return offspring1,offspring2
@@ -212,7 +211,7 @@ class pack_population:
 
                 if random.random() < mu_p:
                     offspring2 = inversion_mutation(offspring2)
-#   
+
                 new_pop.append(offspring1)
 
                 if len(new_pop) < self.size:
@@ -222,8 +221,6 @@ class pack_population:
             self.population = new_pop
                 
             best_individual = max(self.population, key=operator.attrgetter('pack_fitness'))
-
-            self.best_inds[gen] = best_individual
 
             print(f'Best Individual: {best_individual.pack_fitness}')
 

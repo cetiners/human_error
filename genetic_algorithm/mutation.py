@@ -5,10 +5,12 @@ import random
 
 def inversion_mutation(pack):
 
-    mutation_point = random.randint(0,pack.size-1)
+    
     mutation_times = random.randint(0,pack.size-1)
 
     for _ in range(mutation_times):
+        
+        mutation_point = random.randint(0,pack.size-1)
         
         offspring = pack.pack[mutation_point]
 
