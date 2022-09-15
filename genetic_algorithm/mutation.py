@@ -7,9 +7,7 @@ import copy
 
 def inversion_mutation(pack):
 
-    
     mutation_times = random.randint(0,pack.size-1)
-    offspring_pack = copy.deepcopy()
 
     for _ in range(mutation_times):
         

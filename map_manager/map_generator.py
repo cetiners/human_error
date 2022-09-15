@@ -80,6 +80,7 @@ class map:
         
         if blurred:
             self.views[name] = blurry_lines(vor_map)
+            
         else:
             self.views[name] = vor_map
 
@@ -148,6 +149,7 @@ class map:
     def attribute_centroids(self,name):
 
         for i in view_noises[name]["atr_list"]:
+            
             self.atr_centroids[i] = []
 
         # Check the centroids and assign them to a dictionary to later use in fitness function
@@ -195,6 +197,7 @@ class map:
         cmap="inferno"
         with open('/Users/cetiners/Desktop/Thesis/human_error/tools/utils.txt') as f:
             pcolors = f.read()
+            [[0, 0.1, 0.5, 0.95, 1.0], ["dodgerblue","moccasin","green","gray","white"]]
         pcolors = json.loads(pcolors)
 
         if name in pcolors.keys():
@@ -207,3 +210,7 @@ class map:
         fig.set_dpi(150)
         fig.set_size_inches(20, 14)
         ax.imshow(self.views[name],cmap)
+
+
+
+    

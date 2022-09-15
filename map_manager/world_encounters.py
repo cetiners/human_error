@@ -77,35 +77,54 @@ class w_encounter:
         self.check_coor = [int(i) for i in self.coord]
         fitness = 0
 
-        # Check the biome number from the terrain list
-        
-        #civ = self.map.views["civilisation"][self.check_coor[0],self.check_coor[1]]
-
         # Reverse check the key to see the name of the biome
 
-        biome = view_noises["terrain"]["atr_list"][(int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]])-1)]
+        active_biome = view_noises["terrain"]["atr_list"][(int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]])-1)]
 
-        # Discourage from placing in the sea
+        supposed_biome = [i for i in encounter_biomes[self.encounter_type] if self.type in encounter_biomes[self.encounter_type][i]][0]
+
+        # Discourage from placing in the sea and check the biome of the encounter.
 
         if (int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]])) == 0:
             
-            fitness -= 10
+            fitness -= 5000
 
-        # if location is in the developed regions
+        # Add the distance to the nearest biome centroid to the mix. Closer to the biome centroid, better the fitness.
+
+        else:
+            min_distance = 99999
+
+            for centroid in self.map.atr_centroids[supposed_biome]:
+
+                x2 = (self.check_coor[0]-centroid[0])**2
+                y2 = (self.check_coor[1]-centroid[1])**2
+                dist = np.sqrt((x2+y2))
+    
+                if dist < min_distance:
+                    min_distance = dist
+
+            fitness -= min_distance
+
+        # if location is in the developed regions punish the algorithm
+
+        civ = self.map.views["civilisation"][self.check_coor[0],self.check_coor[1]]
         
-        #if (civ == 0) | (civ == 4):
+        if (civ == 1) | (civ == 5):
 #
-        #    fitness -= 1000
+            fitness -= 5000
+
 
         # check if the biome is correct
 
-        biomes = encounter_biomes[self.encounter_type]
-        
-        if type not in biomes[biome]:
+        if active_biome != supposed_biome:
 
-            fitness -= 10
-
-        self.fitness = fitness
+            fitness -= 1000
+        #
+        #if type not in biomes[biome]:
+#
+        #    fitness -= 10
+#
+        #self.fitness = fitness
 
         return fitness
 
@@ -162,7 +181,7 @@ class pack_population:
 
             self.population.append(pack(map,type,pack_size,encounter_type))
 
-    def evolve(self,gens,mu_p=0.01,test=False,save=False):
+    def evolve(self,gens,mu_p=0.01,mutation="inversion",test=False,save=False):
 
         for gen in range(1,gens+1):
             
@@ -203,15 +222,28 @@ class pack_population:
                     return offspring1,offspring2
                     
                 # Mutation
+                if mutation == "complete":
 
-                if random.random() < mu_p:
-                    offspring1 = complete_mutation(offspring1)
+                    if random.random() < mu_p:
+                        offspring1 = complete_mutation(offspring1)
 
-                if random.random() < mu_p:
-                    offspring2 = complete_mutation(offspring2)
+                    if random.random() < mu_p:
+                        offspring2 = complete_mutation(offspring2)
+
+                elif mutation == "inversion":
+
+                    if random.random() < mu_p:
+                        offspring1 = inversion_mutation(offspring1)
+
+                    if random.random() < mu_p:
+                        offspring2 = inversion_mutation(offspring2)
+
 
                 offspring1.update_pack_fitness()
                 offspring2.update_pack_fitness()
+
+                offspring1.update_pack_coord()
+                offspring2.update_pack_coord()
 
                 new_pop.append(offspring1)
 

@@ -158,7 +158,63 @@ def ax_pmx(parent_1,parent_2):
     offspring_1.update_pack_fitness()
     offspring_2.update_pack_fitness()
 
-    #offspring_1.pack_coord = new_coord_1
-    #offspring_2.pack_coord = new_coord_2
+    return offspring_1, offspring_2
+
+
+def ax_ax(parent_1,parent_2):
+
+
+    """
+    Arithmetic crossover applied seperately to the axes.
+    """
+    alpha = random.random()
+
+    parent_1_coor_x = [i.coord[0] for i in parent_1.pack] 
+    parent_2_coor_x = [i.coord[0] for i in parent_2.pack]
+
+    parent_1_coor_y = [i.coord[1] for i in parent_1.pack] 
+    parent_2_coor_y = [i.coord[1] for i in parent_2.pack]
+
+    offspring_1 = copy.deepcopy(parent_1)
+    offspring_2 = copy.deepcopy(parent_2)
+    
+    cut_points = [random.randint(0,parent_1.size-1)]
+
+    second_cut = random.randint(0,parent_1.size-1)
+    
+    while second_cut == cut_points[0]:
+        second_cut = random.randint(0,parent_1.size-1)
+    
+    cut_points.append(second_cut)
+
+    cut_points = sorted(cut_points)
+
+    new_coord_1_x = parent_1_coor_x.copy()
+    new_coord_2_x = parent_2_coor_x.copy()
+    new_coord_1_y = parent_1_coor_y.copy()
+    new_coord_2_y = parent_2_coor_y.copy()
+
+    for i in range(cut_points[0],cut_points[1]+1):
+
+        new_coord_1_x[i] = ((new_coord_1_x[i][0]*alpha) + (new_coord_2_x[i][0]*(1-alpha)))
+        new_coord_2_x[i] = ((new_coord_2_x[i][0]*alpha) + (new_coord_1_x[i][0]*(1-alpha)))
+
+        new_coord_1_y[i] = ((new_coord_1_y[i][0]*alpha) + (new_coord_2_y[i][0]*(1-alpha)))
+        new_coord_2_y[i] = ((new_coord_2_y[i][0]*alpha) + (new_coord_1_y[i][0]*(1-alpha)))
+
+
+    for i in range(len(offspring_1.pack)):
+
+        offspring_1.pack[i].coord = [new_coord_1_x[i],new_coord_1_y[i]]
+
+    for i in range(len(offspring_2.pack)):
+
+        offspring_2.pack[i].coord = [new_coord_2_x[i],new_coord_2_y[i]]
+
+    
+    offspring_1.update_pack_coord()
+    offspring_2.update_pack_coord()
+    offspring_1.update_pack_fitness()
+    offspring_2.update_pack_fitness()
 
     return offspring_1, offspring_2
