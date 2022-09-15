@@ -10,9 +10,9 @@ view_noises = {
             "tundra"            : [[0,0]] ,
             "rainforest"        : [[2,2]] ,
             "desert"            : [[0,2],[0,1]] ,
-            "grassland"         : [[1,1],[2,1]],
+            "grassland"         : [[1,1],[1,2]],
             "mountain"          : [[1,0],[2,0]] ,
-            "forest"            : [[1,2]]
+            "forest"            : [[2,1]]
             },
         "interval" : 3,
         "atr_names": ["rain","heat"],

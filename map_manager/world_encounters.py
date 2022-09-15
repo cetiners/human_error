@@ -1,8 +1,6 @@
 import random
 import time
-import csv
 import pickle
-from operator import attrgetter
 from unittest.mock import seal
 from map_manager.map_attributer import *
 from genetic_algorithm.crossover import *
@@ -81,7 +79,7 @@ class w_encounter:
 
         # Check the biome number from the terrain list
         
-        civ = self.map.views["civilisation"][self.check_coor[0],self.check_coor[1]]
+        #civ = self.map.views["civilisation"][self.check_coor[0],self.check_coor[1]]
 
         # Reverse check the key to see the name of the biome
 
@@ -91,13 +89,13 @@ class w_encounter:
 
         if (int(self.map.views["terrain"][self.check_coor[0], self.check_coor[1]])) == 0:
             
-            fitness -= 10000
+            fitness -= 10
 
         # if location is in the developed regions
         
-        if (civ == 0) | (civ == 4):
-
-            fitness -= 1000
+        #if (civ == 0) | (civ == 4):
+#
+        #    fitness -= 1000
 
         # check if the biome is correct
 
@@ -105,7 +103,7 @@ class w_encounter:
         
         if type not in biomes[biome]:
 
-            fitness -= 1000
+            fitness -= 10
 
         self.fitness = fitness
 
@@ -155,7 +153,7 @@ class pack_population:
         self.map = map
         self.timestamp = int(time.time())
         self.size = pop_size
-        self.best_inds = {}
+        self.best_ind = ""
         self.pack_size = pack_size
         self.type = type
         self.encounter_type = encounter_type
@@ -207,20 +205,24 @@ class pack_population:
                 # Mutation
 
                 if random.random() < mu_p:
-                    offspring1 = inversion_mutation(offspring1)
+                    offspring1 = complete_mutation(offspring1)
 
                 if random.random() < mu_p:
-                    offspring2 = inversion_mutation(offspring2)
+                    offspring2 = complete_mutation(offspring2)
+
+                offspring1.update_pack_fitness()
+                offspring2.update_pack_fitness()
 
                 new_pop.append(offspring1)
 
                 if len(new_pop) < self.size:
                     new_pop.append(offspring2)
 
-#           self.log()
             self.population = new_pop
                 
             best_individual = max(self.population, key=operator.attrgetter('pack_fitness'))
+
+            self.best_ind = best_individual
 
             print(f'Best Individual: {best_individual.pack_fitness}')
 

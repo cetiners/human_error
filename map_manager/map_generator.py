@@ -29,15 +29,17 @@ class map:
         self.location_events = {}
         self.views = {}
         self.vors = {}
-
+        self.centroids = {}
         self.interactions = {}
          
 
     def place_character(self):
+
         # Return random a random coordinate
+
         return [random.uniform(0.1,float(self.size)) for i in range(2)]
 
-    def populate_map(self, n_locations=512, name="Regions", blurred=True, is_event=False, relaxed=True,k=10):
+    def populate_map(self, n_locations=512, name="Regions", blurred=True, is_event=False, relaxed=True,k=10, attribute_centroids=True):
 
         # Place centroids to be used as region centres.
         centroids = np.random.randint(0,self.size, (n_locations+2, 2))
@@ -48,10 +50,15 @@ class map:
 
             centroids = relax(centroids,self.size,k=10)
 
+        self.centroids[name] = centroids
+
+
+        self.atr_centroids = {}
+
         edge_points = self.size*np.array([[-1, -1], [-1, 2], [2, -1], [2, 2]])
 
         new_centroids = np.vstack([centroids, edge_points])
-        
+
         vor = Voronoi(new_centroids)
 
     # Calculate Voronoi map
@@ -137,6 +144,29 @@ class map:
         dst, regions = voronoi_kdtree.query(coordinates)
         
         return regions
+
+    def attribute_centroids(self,name):
+
+        for i in view_noises[name]["atr_list"]:
+            self.atr_centroids[i] = []
+
+        # Check the centroids and assign them to a dictionary to later use in fitness function
+        
+        for i in self.centroids[name]:
+
+            coord = [int(j) for j in i]
+
+            if coord[0] < self.size:
+
+                if coord[1] < self.size:
+                    
+                    biome = view_noises[name]["atr_list"][(int(self.views[name][coord[0], coord[1]]))]
+
+                    self.atr_centroids[biome].append([coord[0],coord[1]])
+
+        return print("Centroids attributed, attributes centroited")
+        
+    
 
     #def create_regions(self, name, potential_regions,region_weights=[]):
 #
