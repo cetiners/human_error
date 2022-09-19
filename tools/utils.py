@@ -53,3 +53,66 @@ def map_attribute_checker(map_1, map_2, map_1_range, map_2_range,map_name,double
             attribute_map[i,j] = int(view_noises[map_name]["atr_list"].index(attribute_name))
 
     return attribute_map
+
+encounter_biomes ={
+
+"friendly_animals" : {
+
+    "tundra"        : ["arctic_fox","arctic_hare"],
+    "rainforest"   : ["sloth", "tapir", "spider_monkey", "parrot", "macaw", "capybara", "iguana"],
+    "desert"       : ["camel", "meerkat", "lizard", "tortoise", "ferret"],
+    "grassland"    : ["horse", "bison", "gecko", "deer", "elephant", "gopher"],
+    "mountain"     : ["goat", "donkey", "gazelle", "hare"], 
+    "forest"       : ["squirrel", "deer", "rabbit"]
+
+},
+
+"hostile_animals" : {
+
+    "tundra"        : ["wolf","bear"],
+    "rainforest"   : ["tiger", "jaguar", "snake", "poison_dart_frog", "fire_ant", "mosquitos"],
+    "desert"       : ["bobcat", "lion", "coyote", "rattlesnake", "eagle", "scorpion"],
+    "grassland"    : ["dog","wolf"],
+    "mountain"     : ["bear", "mountain_lion", "leopard", "wolverine"], 
+    "forest"       : ["orangutan", "wild_boar"]
+
+},
+
+"natural_encounters" : {
+
+    "tundra"        : ["ravine","frozen_lake","wind_gust","snow"],
+    "rainforest"   : ["overgrowth", "spiky_canopy", "maze", "flood"],
+    "desert"       : ["sand_dune", "quicksand"],
+    "grassland"    : [],
+    "mountain"     : ["thunderstorm", "avalanche", "cliff", "ravine"],
+    "forest"       : ["fallen_tree"]
+
+},
+
+"special_encounters" : {
+
+    "tundra"        : ["cannibals","frozen_figure"],
+    "rainforest"   : ["wood_choppers", "wilds", "climate_activists"],
+    "desert"       : ["tuskan_raiders", "fury_road","sand_storm","heat_wave"],
+    "grassland"    : ["hunters","animal_migration"],
+    "mountain"     : ["monk","tourists"], 
+    "forest"       : ["witches_house","cult_meeting"]
+
+}
+}
+
+all_encounters = []
+
+required_n_enc = {}
+
+for i in encounter_biomes:
+    for j in encounter_biomes[i]:
+        for k in encounter_biomes[i][j]:
+            if i == "friendly_animals":
+                required_n_enc[k] = 30
+            elif i == "hostile_animals":
+                required_n_enc[k] = 30
+            elif i == "natural_encounters":
+                required_n_enc[k] = 10
+            else:
+                required_n_enc[k] = 4 

@@ -2,7 +2,7 @@ from re import T
 import noise
 import numpy as np
 
-def toddler(size, res=32, seed=200,  octaves = 8, persistence=0.6, lacunarity = 2, mask=False):
+def toddler(size, res=32, seed=124,  octaves = 10, persistence=0.8, lacunarity = 2, mask=False):
     scale = size/res
 
     if mask:
@@ -24,8 +24,8 @@ def toddler(size, res=32, seed=200,  octaves = 8, persistence=0.6, lacunarity = 
 
     if mask:
         for idx, i in enumerate(map):
-            map[idx][map[idx] > 0 ] = 1
-            map[idx][map[idx] <= 0] = 0
+            map[idx][map[idx] > -0.25 ] = 1
+            map[idx][map[idx] <= -0.25] = 0
         
     return map
 

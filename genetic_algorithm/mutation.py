@@ -1,9 +1,6 @@
-from map_manager.world_encounters import *
 
+import numpy as np
 import random
-import copy
-
-
 
 def inversion_mutation(pack):
 
@@ -32,9 +29,14 @@ def complete_mutation(pack):
     new_coords = [[round(random.uniform(0, 1024-1),1) for i in range(2)] for i in range(pack.size)]
 
     for i in range(len(new_coords)):
-        pack.pack[i].coord = new_coords[i]
 
+        pack.pack[i].coord = new_coords[i]
+        
     pack.update_pack_coord()
     pack.update_pack_fitness()
 
     return pack
+
+
+
+    

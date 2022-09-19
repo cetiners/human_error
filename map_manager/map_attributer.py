@@ -7,10 +7,10 @@ import numpy as np
 view_noises = {
     "terrain" : { 
         "atr" :{
-            "tundra"            : [[0,0]] ,
-            "rainforest"        : [[2,2]] ,
-            "desert"            : [[0,2],[0,1]] ,
-            "grassland"         : [[1,1],[1,2]],
+            "tundra"            : [[0,0]],
+            "rainforest"        : [[2,2]],
+            "desert"            : [[0,2]],
+            "grassland"         : [[1,1],[1,2],[0,1]],
             "mountain"          : [[1,0],[2,0]] ,
             "forest"            : [[2,1]]
             },
@@ -19,16 +19,16 @@ view_noises = {
         "atr_list" : ["tundra","rainforest","desert","grassland","mountain","forest"]
     },
     "civilisation" : { 
-        "atr" :{
-            "ruins"         : [[0,2]],   
-            "metropol"      : [[2,2]],       
-            "city"          : [[2,1],[1,2],[2,0]],       
-            "town"          : [[1,1]],      
-            "wild"          : [[0,0],[0,1],[1,0]],           
+        "atr" :{ 
+            "wild"          : [[0,0],[0,1],[1,0],[0,2]], 
+            "city"          : [[2,1],[2,2]],       
+            "countryside"   : [[1,1],[1,2],[2,0]],      
+          
             },
         "interval" : 3,
+        
         "atr_names": ["population","history"],
-        "atr_list" : ["ruins","metropol","city","town","wild"]
+        "atr_list" : ["wild","city","countryside"]
     },
     "threat" : { 
         "atr" :{

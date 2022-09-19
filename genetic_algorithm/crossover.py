@@ -1,5 +1,6 @@
 
-from map_manager.world_encounters import *
+from map_manager import world_encounters
+import numpy as np
 import random
 import copy
 
@@ -12,8 +13,8 @@ def partially_mapped_xo(parent_1,parent_2):
     parent_1_coor = [i.coord for i in parent_1.pack] 
     parent_2_coor = [i.coord for i in parent_2.pack]
 
-    offspring_1 = copy.deepcopy(parent_1)
-    offspring_2 = copy.deepcopy(parent_2)
+    offspring_1 = world_encounters.pack(parent_1.map,type=parent_1.type, size = parent_1.size, encounter_type = parent_1.encounter_type)
+    offspring_2 = world_encounters.pack(parent_1.map,type=parent_1.type, size = parent_1.size, encounter_type = parent_1.encounter_type)
     
     cut_points = [random.randint(0,len(parent_1_coor))-1]
 
@@ -64,8 +65,10 @@ def ar_xo(parent_1,parent_2):
     parent_1_coor = [i.coord for i in parent_1.pack] 
     parent_2_coor = [i.coord for i in parent_2.pack]
 
-    offspring_1 = copy.deepcopy(parent_1)
-    offspring_2 = copy.deepcopy(parent_2)
+
+    offspring_1 = world_encounters.pack(parent_1.map,type=parent_1.type, size = parent_1.size, encounter_type = parent_1.encounter_type)
+    offspring_2 = world_encounters.pack(parent_1.map,type=parent_1.type, size = parent_1.size, encounter_type = parent_1.encounter_type)
+    
     
     cut_points = [random.randint(0,len(parent_1_coor))-1]
 
@@ -109,7 +112,10 @@ def ax_pmx(parent_1,parent_2):
 
     """
     Takes a "pack" of world encounters, selects two random crossing points from the list of encounters and swaps coordinates between them.
+    
     """
+
+    from map_manager.world_encounters import pack
 
     parent_1_coor_x = [i.coord[0] for i in parent_1.pack] 
     parent_2_coor_x = [i.coord[0] for i in parent_2.pack]
@@ -117,8 +123,8 @@ def ax_pmx(parent_1,parent_2):
     parent_1_coor_y = [i.coord[1] for i in parent_1.pack] 
     parent_2_coor_y = [i.coord[1] for i in parent_2.pack]
 
-    offspring_1 = copy.deepcopy(parent_1)
-    offspring_2 = copy.deepcopy(parent_2)
+    offspring_1 = world_encounters.pack(parent_1.map,type=parent_1.type, size = parent_1.size, encounter_type = parent_1.encounter_type)
+    offspring_2 = world_encounters.pack(parent_1.map,type=parent_1.type, size = parent_1.size, encounter_type = parent_1.encounter_type)
     
     cut_points = [random.randint(0,parent_1.size-1)]
 
@@ -161,7 +167,7 @@ def ax_pmx(parent_1,parent_2):
     return offspring_1, offspring_2
 
 
-def ax_ax(parent_1,parent_2):
+def ax_ar_xo(parent_1,parent_2):
 
 
     """
@@ -175,8 +181,8 @@ def ax_ax(parent_1,parent_2):
     parent_1_coor_y = [i.coord[1] for i in parent_1.pack] 
     parent_2_coor_y = [i.coord[1] for i in parent_2.pack]
 
-    offspring_1 = copy.deepcopy(parent_1)
-    offspring_2 = copy.deepcopy(parent_2)
+    offspring_1 = world_encounters.pack(parent_1.map,type=parent_1.type, size = parent_1.size, encounter_type = parent_1.encounter_type)
+    offspring_2 = world_encounters.pack(parent_1.map,type=parent_1.type, size = parent_1.size, encounter_type = parent_1.encounter_type)
     
     cut_points = [random.randint(0,parent_1.size-1)]
 
@@ -196,11 +202,10 @@ def ax_ax(parent_1,parent_2):
 
     for i in range(cut_points[0],cut_points[1]+1):
 
-        new_coord_1_x[i] = ((new_coord_1_x[i][0]*alpha) + (new_coord_2_x[i][0]*(1-alpha)))
-        new_coord_2_x[i] = ((new_coord_2_x[i][0]*alpha) + (new_coord_1_x[i][0]*(1-alpha)))
-
-        new_coord_1_y[i] = ((new_coord_1_y[i][0]*alpha) + (new_coord_2_y[i][0]*(1-alpha)))
-        new_coord_2_y[i] = ((new_coord_2_y[i][0]*alpha) + (new_coord_1_y[i][0]*(1-alpha)))
+        new_coord_1_x[i] = ((new_coord_1_x[i]*alpha) + (new_coord_2_x[i]*(1-alpha)))
+        new_coord_2_x[i] = ((new_coord_2_x[i]*alpha) + (new_coord_1_x[i]*(1-alpha)))
+        new_coord_1_y[i] = ((new_coord_1_y[i]*alpha) + (new_coord_2_y[i]*(1-alpha)))
+        new_coord_2_y[i] = ((new_coord_2_y[i]*alpha) + (new_coord_1_y[i]*(1-alpha)))
 
 
     for i in range(len(offspring_1.pack)):
