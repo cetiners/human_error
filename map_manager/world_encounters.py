@@ -117,7 +117,6 @@ class pack:
 
     def update_pack_fitness(self):
 
-        #self.pack_fitness = sum(i for i in [ind.check_fitness() for ind in self.pack])
         pack_fitness = 0
 
         for ind_s in self.pack:
@@ -129,6 +128,7 @@ class pack:
 
     def update_pack_coord(self):
         self.pack_coord =  [ind.coord for ind in self.pack]
+        self.check_coor = [ind.check_coor for ind in self.pack]
         return self.pack_coord
 
 class pack_population:
@@ -137,7 +137,7 @@ class pack_population:
         Population of pack of world encounters containing individuals.
     """
 
-    def __init__(self, map, pop_size,pack_size,type):
+    def __init__(self, map, pop_size,pack_size,type,world_atlas,yellow_pages):
         
         self.population = []
         self.gen = 1
@@ -148,27 +148,28 @@ class pack_population:
         self.pack_size = pack_size
         self.type = type
 
+        self.world_atlas = world_atlas
+        self.yellow_pages = yellow_pages
+
         for i in encounter_biomes:
             for j in encounter_biomes[i]:
                 if self.type in encounter_biomes[i][j]:
                     self.encounter_type = i
 
+
         for _ in range(self.size):
             self.population.append(pack(map,type=self.type,size = self.pack_size,encounter_type = self.encounter_type))
 
-    def evolve(self,gens=50, mu_p=0.01,crossover="ax_pmx",mutation="inversion",world_atlas=[],yellow_pages=[], early_stop=False):
-        
-        final_list = []
-        final_coords = []
+
+    def evolve(self,gens=50, mu_p=0.01,crossover="ax_pmx",mutation="inversion", early_stop=False):
 
         satisfied = False
 
+        added = 0 
+        
         while not satisfied:
 
             new_pop = []
-
-            print('\nGen', self.gen, 'evolving:')
-
             
             while len(new_pop) < self.size:
 
@@ -238,7 +239,7 @@ class pack_population:
                 offspring1.update_pack_coord()
                 offspring2.update_pack_coord()
 
-                new_pop.append(offspring2)
+                new_pop.append(offspring1)
 
                 if len(new_pop) < self.size:
 
@@ -248,6 +249,37 @@ class pack_population:
 
             n_ind = required_n_enc[self.type]
 
+            final_list = self.yellow_pages
+            final_coords = self.world_atlas
+
+#            added = 0
+#
+#            while added < n_ind:
+#
+#                if self.gen % 1 == 0:
+#
+#                    for pack_b in new_pop:
+#                        
+#                        while added < n_ind:
+#
+#                            for ind_b in pack_b.pack:
+#                                print("checking for new individuals")
+#
+#                                if ind_b.fitness > -1000:
+#
+#                                    if ind_b.check_coor not in self.world_atlas:
+#                                        print("Found one!")
+#                                        self.yellow_pages.append(ind_b)
+#                                        self.world_atlas.append(ind_b.check_coor)
+#                                        added += 1
+#                                        if added == n_ind:
+#                                            break
+#                                        
+#                            if added == n_ind:
+#                                    break
+            
+#                                    
+
             if self.gen % 1 == 0:
                 for pack_b in self.population:
                     for ind_b in pack_b.pack:
@@ -255,43 +287,35 @@ class pack_population:
                             if ind_b.check_coor not in final_coords:
                                 final_list.append(ind_b)
                                 final_coords.append(ind_b.check_coor)
-                            if len(final_list) == n_ind:
+                                added += 1
+                            if added == n_ind:
                                 break
                     
-                if len(final_list) == n_ind:
-                    break
+                    if added == n_ind:
+                        break
 
-                                    
-            print(f'Found individuals: {len(final_list)}')
+            print(f'Gen {self.gen}, found individuals: {added}')
+
+            self.world_atlas = final_coords
+            self.yellow_pages = final_list
 
 
-            if len(final_list) < n_ind:
+
+
+            if added < n_ind:
 
                 satisfied = False
             
-            elif len(final_list) == n_ind:
-
+            elif added == n_ind:
+                print(f'Found required individuals: {added}, on generation {self.gen}')
                 satisfied = True
-                print(f'Found required individuals: {len(final_list)}, on generation {self.gen}')
+                break
 
             if early_stop:
                 if self.gen == gens:
                     satisfied = True
 
             self.gen += 1
-
-        
-        #best_individuals = sorted(self.population, key=operator.attrgetter('pack_fitness'), reverse=True)[:5]
-
-
-        yellow_pages.append(final_list)
-
-        world_atlas.append(final_coords)
-
-        return world_atlas, yellow_pages
-
-        #self.suitable_inds = final_list
-
 
 
 class w_encounter_manager:
@@ -311,13 +335,15 @@ class w_encounter_manager:
 
         for encounter in self.encounters:
 
-            print(f"Generating {encounter} encounters, {required_n_enc[encounter]} required.")
+            print(f"\nGenerating {encounter} encounters, {required_n_enc[encounter]} required.")
 
-            pop = pack_population(self.map,pop_size=50,pack_size=100,type=encounter,world_atlas=self.coordinates,yellow_pages=self.individuals)
-            coord, inds = pop.evolve(mu_p=0.25,mutation="complete",crossover="ax_pmx")
+            pop = pack_population(self.map,pop_size=100,pack_size=100,type=encounter,world_atlas=self.coordinates,yellow_pages=self.individuals)
+            pop.evolve(mu_p=0.22,mutation="complete",crossover="ax_pmx")
 
-            self.coordinates.append(coord)
-            self.individuals.append(inds)
+            self.coordinates.append(pop.world_atlas)
+            self.individuals.append(pop.yellow_pages)
+
+            del(pop)
 
     
       
