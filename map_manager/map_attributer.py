@@ -60,12 +60,18 @@ view_noises = {
 }
 
 def histeq(img,  alpha=1):
+    """
+    Histogram equalization of a grayscale image.
+    """
     img_cdf, bin_centers = exposure.cumulative_distribution(img)
     img_eq = np.interp(img, bin_centers, img_cdf)
     img_eq = np.interp(img_eq, (0, 1), (-1, 1))
     return alpha * img_eq + (1 - alpha) * img
 
 def average_cells(vor, data):
+    """
+    Averages the values of the cells in the Voronoi diagram.
+    """
 
     """Returns the average value of data inside every voronoi cell"""
     
@@ -87,6 +93,9 @@ def average_cells(vor, data):
     return average
 
 def fill_cells(vor, data):
+    """
+    Fills the cells in the Voronoi diagram with the average value.
+    """
     size = vor.shape[0]
     image = np.zeros((size, size))
 

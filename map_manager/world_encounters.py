@@ -14,6 +14,18 @@ class w_encounter:
     """
         Handles placements for the world encounters, given the map. Checks the appropriate map placements 
         considering biomes, danger level and civilisation to calculate the appropriate fitness.
+        
+        Attributes:
+            map (map): The map object to be used for the encounter placement.
+            encounter_type (str): The type of encounter to be placed. Can be "friendly_animals", "hostile_animals", "natural_encounters" or "special_encounters".
+            type (str): The type of the encounter.
+            size (int): The size of the map.
+            check_coor (list): The coordinates of the encounter in integer form.
+            fitness (int): The fitness of the encounter.
+            coord (list): The coordinates of the encounter in float form.
+
+        Methods:
+            check_fitness: Checks the fitness of the encounter.
     """
 
     def __init__(self,map,encounter_type="", type="", size=1024):
@@ -97,6 +109,17 @@ class pack:
     """
         Creates a set or a "pack" of w_encounter individuals, returns a list of individuals within
         the pack and their individual fitnesses
+
+        Args:
+            map (map): The map object to be used for the encounter placement.
+            encounter_type (str): The type of encounter to be placed. Can be "friendly_animals", "hostile_animals", "natural_encounters" or "special_encounters".
+            type (str): The type of the encounter.
+            size (int): The size of the map.
+
+        Methods:
+            update_pack_fitness: Updates the fitness of the pack.
+            update_pack_coord: Updates the coordinates of the pack.
+
     """
 
     def __init__(self,map,encounter_type="",type="",size=25):
@@ -135,6 +158,21 @@ class pack_population:
 
     """
         Population of pack of world encounters containing individuals.
+
+        Args:
+            map (map): The map object to be used for the encounter placement.
+            encounter_type (str): The type of encounter to be placed. Can be "friendly_animals", "hostile_animals", "natural_encounters" or "special_encounters".
+            type (str): The type of the encounter.
+            size (int): The size of the map.
+            pop_size (int): The size of the population.
+
+        Methods:
+            evolve: Evolves the population coordinates using genetic operators.
+                gens (int): The number of generations to evolve the population.
+                mu_p (float): The probability of mutation.
+                crossover (str): The crossover operator to be used. Can be "ax_pmx", "pmx", "ar_xo" or "ax_ar_xo".
+                mutation (str): The mutation operator to be used. Can be "complete" or "inversion".
+                early_stop (bool): If True, the evolution will stop after the number of generations specified in gens.
     """
 
     def __init__(self, map, pop_size,pack_size,type,world_atlas,yellow_pages):
@@ -322,6 +360,19 @@ class w_encounter_manager:
     
     """
     Generates all the required world encounters through the genetic operators.
+
+    Args:
+        map (map): The map object to be used for the encounter placement.
+        pop_size (int): The size of the population.
+        gens (int): The number of generations to evolve the population.
+        mu_p (float): The probability of mutation.
+        crossover (str): The crossover operator to be used. Can be "ax_pmx", "pmx", "ar_xo" or "ax_ar_xo".
+        mutation (str): The mutation operator to be used. Can be "complete" or "inversion".
+        early_stop (bool): If True, the evolution will stop after the number of generations specified in gens.
+
+    Methods:
+        let_there_be_light: Evolves the population coordinates using genetic operators.
+
     """
 
     def __init__(self,map,list_of_encounters):

@@ -4,6 +4,10 @@ import numpy as np
 
 def fps(population):
 
+    """
+    Fitness proportionate selection
+    """
+
     #min_val = min(population.population, key=operator.attrgetter('pack_fitness')).pack_fitness
     max = sum([i.pack_fitness for i in population.population])
 
@@ -30,7 +34,9 @@ def fps(population):
 
 
 def rank_selection(population):
-
+    """
+    Rank selection
+    """
     ranked_pop = sorted(population.population, key=operator.attrgetter('pack_fitness'))
     
     rank_sum = (population.size * (population.size +1) / 2)

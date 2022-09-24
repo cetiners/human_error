@@ -16,6 +16,59 @@ import json
 
 
 class map:
+    """
+    Generates the game world map.
+
+    Parameters:
+    -----------
+    n_locations: int
+        Number of locations to be generated.
+    name: str
+        Name of the map.
+    blurred: bool
+        Whether to blur the map or not.
+    is_event: bool
+        Whether the map is an event map or not.
+    relaxed: bool
+        Whether to relax the map or not.
+    k: int
+        Number of iterations for Lloyd relaxation.
+    attribute_centroids: bool
+        Whether to attribute the centroids or not.
+    double: bool
+        Whether to attribute two maps or not.
+    seed_1: int
+        Seed for the first map.
+    seed_2: int
+        Seed for the second map.
+    attr_names: list
+        List of names for the attributes.
+    alpha: float
+        Alpha value for histogram equalization.
+    map_name: str
+        Name of the map to be attributed.
+    view_name: str
+        Name of the view to be attributed.
+    
+    Methods:
+    --------
+    place_character()
+        Returns a random coordinate.
+    populate_map()
+        Populates the map with locations.
+    land_mask()
+        Masks the map with a land mask.
+    event_starter()
+        Starts an event.
+    check_region()
+        Checks and returns the given attributed location for a coordinate.
+    attribute_map()
+        Attributes the map.
+    attribute_centroids()
+        Returns the centroids for each attribute region.
+    
+
+    """
 
     def __init__(self, name="Map", size=1024):
         self.name = name

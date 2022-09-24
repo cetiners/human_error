@@ -2,6 +2,9 @@ import numpy as np
 from scipy.spatial import Voronoi
 
 def voronoi(points, size):
+    """
+    Compute Voronoi diagram for a set of points.
+    """
     # Add points at edges to eliminate infinite ridges
     edge_points = size*np.array([[-1, -1], [-1, 2], [2, -1], [2, 2]])
     new_points = np.vstack([points, edge_points])
@@ -13,6 +16,9 @@ def voronoi(points, size):
 
 
 def relax(points, size, k=10):  
+    """
+    Lloyd relaxation algorithm for Voronoi diagram.
+    """
     new_points = points.copy()
     for _ in range(k):
         vor = voronoi(new_points, size)

@@ -4,6 +4,10 @@ import random
 
 def inversion_mutation(pack):
 
+    """
+    Takes a "pack" of world encounters, selects two random crossing points from the list of encounters and swaps coordinates between them.
+    """
+
     mutation_times = random.randint(0,pack.size-1)
 
     for _ in range(mutation_times):
@@ -25,6 +29,9 @@ def inversion_mutation(pack):
 
 
 def complete_mutation(pack):
+    """
+    Takes a "pack" of world encounters, completely randomizes the coordinates of each encounter.
+    """
 
     new_coords = [[round(random.uniform(0, 1024-1),1) for i in range(2)] for i in range(pack.size)]
 

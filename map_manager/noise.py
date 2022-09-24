@@ -3,6 +3,10 @@ import noise
 import numpy as np
 
 def toddler(size, res=32, seed=124,  octaves = 10, persistence=0.8, lacunarity = 2, mask=False):
+
+    """
+    Generate a random map using Perlin noise.
+    """
     scale = size/res
 
     if mask:
@@ -33,6 +37,9 @@ def toddler(size, res=32, seed=124,  octaves = 10, persistence=0.8, lacunarity =
 
 
 def blurry_lines(map, vol = 8):
+    """
+    Blur the lines of a map.
+    """
 
     noise = np.dstack([toddler(size=map.shape[0], seed=200, octaves=8), toddler(map.shape[0], octaves=8,seed=200)])
     noise = np.indices((map.shape[0], map.shape[0])).T + vol * noise
