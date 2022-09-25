@@ -103,7 +103,6 @@ class w_encounter:
         self.fitness = fitness
         return fitness
 
-
 class pack:
 
     """
@@ -153,6 +152,11 @@ class pack:
         self.pack_coord =  [ind.coord for ind in self.pack]
         self.check_coor = [ind.check_coor for ind in self.pack]
         return self.pack_coord
+
+    def __repr__(self):
+        return f"pack of {self.size} individuals"
+    def __str__(self):
+        return f"pack of {self.size} individuals"
 
 class pack_population:
 
@@ -290,34 +294,6 @@ class pack_population:
             final_list = self.yellow_pages
             final_coords = self.world_atlas
 
-#            added = 0
-#
-#            while added < n_ind:
-#
-#                if self.gen % 1 == 0:
-#
-#                    for pack_b in new_pop:
-#                        
-#                        while added < n_ind:
-#
-#                            for ind_b in pack_b.pack:
-#                                print("checking for new individuals")
-#
-#                                if ind_b.fitness > -1000:
-#
-#                                    if ind_b.check_coor not in self.world_atlas:
-#                                        print("Found one!")
-#                                        self.yellow_pages.append(ind_b)
-#                                        self.world_atlas.append(ind_b.check_coor)
-#                                        added += 1
-#                                        if added == n_ind:
-#                                            break
-#                                        
-#                            if added == n_ind:
-#                                    break
-            
-#                                    
-
             if self.gen % 1 == 0:
                 for pack_b in self.population:
                     for ind_b in pack_b.pack:
@@ -354,6 +330,12 @@ class pack_population:
                     satisfied = True
 
             self.gen += 1
+        
+        def __repr__(self):
+            return f'Population of {self.size} individuals, generation {self.gen}'
+
+        def __len__(self):
+            return self.size
 
 
 class w_encounter_manager:
@@ -395,33 +377,3 @@ class w_encounter_manager:
             self.individuals.append(pop.yellow_pages)
 
             del(pop)
-
-    
-      
-
-#    def log(self):
-#        
-#        '''
-#        To register the evolution process - a csv is saved with the following info for each pack:
-#        
-#        Generation | Type | Individual Fitness | Individual Coordinates
-#            
-#        This will be useful for report analysis of results
-#        
-#        '''
-#        
-#        with open(f'run_{self.timestamp}.csv', 'a', newline='') as file:
-#            writer = csv.writer(file)
-#            for i in self:
-#               writer.writerow([self.gen, i., i.fitness, i.score])
-
-    #def __len__(self):
-    #    return len(self.individuals)
-#
-    #def __getitem__(self, position):
-    #    return self.individuals[position]
-#
-    #def __repr__(self):
-#        return f"Population(size={len(self.individuals)})"
-
-

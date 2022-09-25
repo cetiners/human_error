@@ -1,9 +1,19 @@
 
+import re
 from map_manager.map_attributer import view_noises
 import numpy as np
 
 import math
 from itertools import combinations
+
+def basic_distance(coord_1, coord_2):
+
+    x2 = (coord_1[0]-coord_2[0])**2
+    y2 = (coord_1[1]-coord_2[1])**2
+    dist = np.sqrt((x2+y2))
+    
+    return dist
+
 
 def ranger(map_name,map_1_range):
 
@@ -53,6 +63,7 @@ def map_attribute_checker(map_1, map_2, map_1_range, map_2_range,map_name,double
             attribute_map[i,j] = int(view_noises[map_name]["atr_list"].index(attribute_name))
 
     return attribute_map
+
 
 encounter_biomes ={
 
@@ -116,3 +127,24 @@ for i in encounter_biomes:
                 required_n_enc[k] = 10
             else:
                 required_n_enc[k] = 4 
+
+
+#
+#a = [i.check_coor for i in ]
+#cmap = colors.ListedColormap(["dodgerblue","white","yellowgreen","khaki","lawngreen","slategrey","darkgreen"])
+#civ = nw.views["civilisation"].copy()
+#ter = nw.views["terrain"].copy()
+#
+#fig, ax = plt.subplots(1,2)
+#fig.set_dpi(150)
+#fig.set_size_inches(12, 8)
+#
+#
+#ax[0].imshow(ter.T,cmap=cmap,alpha=.66)
+#ax[0].set_title("Terrain")
+#ax[0].scatter(x=[i[0] for i in a], y=[i[1] for i in a],color="Black",s=25,marker="4")
+#
+#ax[1].imshow(civ.T,cmap="Blues",alpha=0.66)
+#ax[1].set_title("Civilisation")
+#ax[1].scatter(x=[i[0] for i in a], y=[i[1] for i in a],color="Black",s=25,marker="4")
+

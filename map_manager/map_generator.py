@@ -190,21 +190,18 @@ class map:
             goblin = npc("Dark figure",self,xp=20,p_health=15)
             player.battle(goblin, "Demo fight")
 
-
     def check_region(self,coordinates):
         
         points = self.vor.points
         voronoi_kdtree = cKDTree(points)
         dst, regions = voronoi_kdtree.query(coordinates)
-        
+
         return regions
 
     def attribute_centroids(self,name):
-
         for i in view_noises[name]["atr_list"]:
             
             self.atr_centroids[i] = []
-
         # Check the centroids and assign them to a dictionary to later use in fitness function
         
         for i in self.centroids[name]:

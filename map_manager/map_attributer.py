@@ -21,14 +21,14 @@ view_noises = {
     "civilisation" : { 
         "atr" :{ 
             "wild"          : [[0,0],[0,1],[1,0],[0,2]], 
-            "city"          : [[2,1],[2,2]],       
-            "countryside"   : [[1,1],[1,2],[2,0]],      
+            "countryside"   : [[1,1],[1,2],[2,0],[2,1]],      
+            "city"          : [[2,2]],       
           
             },
         "interval" : 3,
         
         "atr_names": ["population","history"],
-        "atr_list" : ["wild","city","countryside"]
+        "atr_list" : ["wild","countryside","city"]
     },
     "threat" : { 
         "atr" :{
@@ -56,7 +56,22 @@ view_noises = {
         "atr_names": ["fac1","fac2"],
         "atr_list" : ["fac1_main","fac1_ext","fac2_main","fac2_ext","warzone","undisputed"]
 
-    }
+    },
+    "story_arc" : {
+        "atr" :{
+            "arc1"      :  [[5,5]],
+            "arc2"      :  [[4,4]],
+            "arc3"      :  [[3,3]],
+            "arc4"      :  [[2,2]],
+            "arc5"      :  [[1,1]],
+            "arc6"      :  [[0,0]]
+            },
+        "interval" : 6,
+        "atr_names": ["arc","arc"],
+        "atr_list" : ["arc1","arc2","arc3","arc4","arc5","arc6"]
+    },
+
+
 }
 
 def histeq(img,  alpha=1):
