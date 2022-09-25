@@ -7,6 +7,7 @@
 
 import random
 import numpy as np
+from tools.utils import basic_distance
 from map_manager.map_attributer import view_noises
 
 class quest:
@@ -63,8 +64,32 @@ class quest:
         self.difficulty = 0
         return self.difficulty
 
-    def check_radius(self):
-        pass
+    def point_distances(self):
+
+        self.dist_dict = {
+            "key" : {},
+            "lock": {}
+        }
+
+        for kdx, k in enumerate([self.key_coords, self.lock_coords]):
+            distances = []
+            for i in range(self.steps-1):
+                if len(k[i]) > 0:
+                    dists = [(basic_distance(coord,k[i+1][0])) for coord in k[i]]
+                    distances.append(dists)
+            total_dist = 0
+
+            for i in distances:
+                total_dist += min(i)
+
+            if kdx == 0:
+                self.dist_dict["key"]["dist_list"] = distances
+                self.dist_dict["key"]["total_dist"] = total_dist
+            else:
+                self.dist_dict["lock"]["dist_list"] = distances
+                self.dist_dict["lock"]["total_dist"] = total_dist 
+
+
 
 
     def __repr__(self):
