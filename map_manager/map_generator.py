@@ -218,31 +218,6 @@ class map:
 
         return print("Centroids attributed, attributes centroited")
         
-    
-
-    #def create_regions(self, name, potential_regions,region_weights=[]):
-#
-    #    if potential_regions == []:
-    #    
-    #        region_weights = [(1/len(potential_regions)) for i in range(len(potential_regions))]
-    #    
-    #    types = {}
-    #    
-    #    for i in range(0,len(self.vors[name].regions)):    
-    #        types[str(self.vors[name].regions[i])] = (random.choices(list(potential_regions.keys()), weights =region_weights,k=1))[0]
-#
-    #    fig = voronoi_plot_2d(self.vors[name], show_vertices=False, line_colors='white',line_width=0.0, line_alpha=0.0, point_size=1)
-    #    fig.set_size_inches(18.5, 10.5)
-    #    
-    #    for region in self.vors[name].regions:
-    #        if not -1 in region:
-    #            polygon = [self.vors[name].vertices[i] for i in region]
-    #            plt.fill(*zip(*polygon),color=potential_regions[types[str(region)]],alpha=0.4)
-    #        plt.xlim(right=0, left=self.size)
-    #        plt.ylim(bottom=0, top=self.size)
-    #    
-    #    return types
-
     def print_map(self,name=""):
         cmap="inferno"
         with open('/Users/cetiners/Desktop/Thesis/human_error/tools/utils.txt') as f:

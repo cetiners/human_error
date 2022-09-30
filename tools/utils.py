@@ -6,6 +6,88 @@ import numpy as np
 import math
 from itertools import combinations
 
+
+def freytags(path):
+    """
+    Checks an any given array for suitability to the freytag pyramid.
+    """
+    freytag_fitness = 0 
+    
+    steps = len(path[:-1])
+
+    if steps == 1:
+        
+        freytag_fitness = 0
+
+    elif steps == 2:
+        if path[0] <= path[1]:
+            freytag_fitness -= 1000
+
+    elif steps == 3:
+
+        if path[0] >= path[2]:
+            freytag_fitness -=  1000
+
+        if path[0] >= path[1]:
+            freytag_fitness -=  1000
+
+        if path[2] >= path[1]:
+            freytag_fitness -=  1000
+
+    elif steps == 4:
+
+        if path[0] >= path[3]:
+            freytag_fitness -=  1000
+        
+        if path[0] >= path[1]:
+            freytag_fitness -=  1000
+
+        if path[0] >= path[2]:
+            freytag_fitness -=  1000
+
+        if path[1] >= path[2]:
+            freytag_fitness -=  1000
+
+        if path[1] >= path[3]:
+            freytag_fitness -=  1000
+
+        if path[3] >= path[2]:
+            freytag_fitness -=  1000
+        
+
+    elif steps == 5:
+        if path[0] >= path[4]:
+            freytag_fitness -=  1000
+
+        if path[0] >= path[3]:
+            freytag_fitness -=  1000
+        
+        if path[0] >= path[1]:
+            freytag_fitness -=  1000
+
+        if path[0] >= path[2]:
+            freytag_fitness -=  1000
+
+        if path[4] >= path[3]:
+            freytag_fitness -=  1000
+        
+        if path[4] >= path[2]:
+            freytag_fitness -=  1000
+
+        if path[4] >= path[1]:
+            freytag_fitness -=  1000
+
+        if path[3] >= path[2]:
+            freytag_fitness -=  1000
+
+        if path[3] >= path[1]:
+            freytag_fitness -=  1000
+        
+        if path[1]>= path[2]:
+            freytag_fitness -=  1000
+
+    return freytag_fitness
+
 def basic_distance(coord_1, coord_2):
 
     x2 = (coord_1[0]-coord_2[0])**2

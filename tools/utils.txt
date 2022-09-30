@@ -1,6 +1,0 @@
-
-{
-    "land" : [[0, 0.1, 0.5, 0.95, 1.0], ["dodgerblue","moccasin","green","gray","white"]],
-    "danger" : [[0,1],["white","crimson"]]
-    
-}

@@ -20,28 +20,32 @@ view_noises = {
     },
     "civilisation" : { 
         "atr" :{ 
-            "wild"          : [[0,0],[0,1],[1,0],[0,2]], 
-            "countryside"   : [[1,1],[1,2],[2,0],[2,1]],      
-            "city"          : [[2,2]],       
+            "wild"          : [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4],[5,5]],
+            "countryside"   : [[6, 6], [7, 7], [8, 8]],      
+            "city"          : [[9,9]],       
           
             },
-        "interval" : 3,
+        "interval" : 10,
         
-        "atr_names": ["population","history"],
+        "atr_names": ["population","population"],
         "atr_list" : ["wild","countryside","city"]
     },
     "threat" : { 
         "atr" :{
-            "very_high" : [[5,5]],   
-            "high"      : [[4,4]],       
-            "medium"    : [[3,3]],       
-            "low"       : [[2,2]],   
-            "very_low"  : [[1,1]],       
-            "safe"      : [[0,0]],           
+            "9" : [[9,9]],
+            "8" : [[8,8]],
+            "7" : [[7,7]],
+            "6" : [[6,6]],
+            "5" : [[5,5]],   
+            "4" : [[4,4]],       
+            "3" : [[3,3]],       
+            "2" : [[2,2]],   
+            "1" : [[1,1]],       
+            "0" : [[0,0]],           
             },
-        "interval" : 6,
+        "interval" : 10,
         "atr_names": ["threat","threat"],
-        "atr_list" : ["very_high","high","medium","low","very_low","safe"]
+        "atr_list" : ["9","8","7","6","5","4","3","2","1","0"]
     },
     "faction" : { 
         "atr" :{
@@ -57,18 +61,15 @@ view_noises = {
         "atr_list" : ["fac1_main","fac1_ext","fac2_main","fac2_ext","warzone","undisputed"]
 
     },
-    "story_arc" : {
+    "story_act" : {
         "atr" :{
-            "arc1"      :  [[5,5]],
-            "arc2"      :  [[4,4]],
-            "arc3"      :  [[3,3]],
-            "arc4"      :  [[2,2]],
-            "arc5"      :  [[1,1]],
-            "arc6"      :  [[0,0]]
+            "act0"      :  [[0,0]],
+            "act1"      :  [[1,1]],
+            "act2"      :  [[2,2]],
             },
-        "interval" : 6,
-        "atr_names": ["arc","arc"],
-        "atr_list" : ["arc1","arc2","arc3","arc4","arc5","arc6"]
+        "interval" : 3,
+        "atr_names": ["act","act"],
+        "atr_list" : ["act0","act1","act2"]
     },
 
 

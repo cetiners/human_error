@@ -1,16 +1,18 @@
 from re import T
 import noise
 import numpy as np
+import random
 
 def toddler(size, res=32, seed=124,  octaves = 10, persistence=0.8, lacunarity = 2, mask=False):
 
     """
     Generate a random map using Perlin noise.
     """
+    seed = random.randint(1,9999)
     scale = size/res
 
     if mask:
-        scale, seed, octaves  = 1024 , 0 , 8
+        scale, seed, octaves  = 1024 , seed , 8
 
     scale = size/res
 
@@ -27,9 +29,10 @@ def toddler(size, res=32, seed=124,  octaves = 10, persistence=0.8, lacunarity =
     ])
 
     if mask:
+        seed = random.randint(1,100)
         for idx, i in enumerate(map):
-            map[idx][map[idx] > -0.25 ] = 1
-            map[idx][map[idx] <= -0.25] = 0
+            map[idx][map[idx] > -0.12 ] = 1
+            map[idx][map[idx] <= -0.12] = 0
         
     return map
 
