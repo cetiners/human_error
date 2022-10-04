@@ -1,10 +1,6 @@
 
-import re
-from map_manager.map_attributer import view_noises
+from map_engine.map_attributer import view_noises
 import numpy as np
-
-import math
-from itertools import combinations
 
 
 def freytags(path):
@@ -153,7 +149,7 @@ encounter_biomes ={
 
     "tundra"        : ["arctic_fox","arctic_hare"],
     "rainforest"   : ["sloth", "tapir", "spider_monkey", "parrot", "macaw", "capybara", "iguana"],
-    "desert"       : ["camel", "meerkat", "lizard", "tortoise", "ferret"],
+    "desert"       : ["camel", "meerkat", "lizard", "tortoise"],
     "grassland"    : ["horse", "bison", "gecko", "deer", "elephant", "gopher"],
     "mountain"     : ["goat", "donkey", "gazelle", "hare"], 
     "forest"       : ["squirrel", "deer", "rabbit"]
@@ -202,13 +198,13 @@ for i in encounter_biomes:
     for j in encounter_biomes[i]:
         for k in encounter_biomes[i][j]:
             if i == "friendly_animals":
-                required_n_enc[k] = 30
+                required_n_enc[k] = 50
             elif i == "hostile_animals":
-                required_n_enc[k] = 30
+                required_n_enc[k] = 20
             elif i == "natural_encounters":
                 required_n_enc[k] = 10
             else:
-                required_n_enc[k] = 4 
+                required_n_enc[k] = 5 
 
 
 #

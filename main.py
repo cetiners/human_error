@@ -1,8 +1,8 @@
-from map_manager.map_generator import map
-from map_manager.noise import toddler
-from map_manager.world_encounters import *
-from genetic_algorithm.crossover import * 
-from genetic_algorithm.mutation import * 
+from map_engine.map_generator import map
+from map_engine.noise import toddler
+from map_engine.world_encounters import *
+from map_engine.map_ga.mutation import * 
+from map_engine.map_ga.crossover import * 
 import pickle
 from matplotlib import colors
 from tools.utils import required_n_enc
