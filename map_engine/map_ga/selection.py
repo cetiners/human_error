@@ -1,6 +1,5 @@
 import operator
 import numpy.random as npr
-import numpy as np
 
 def fps(population):
 

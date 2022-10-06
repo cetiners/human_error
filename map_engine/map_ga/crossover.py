@@ -1,5 +1,5 @@
 
-from map_engine import world_encounters
+from encounter_engine import world_encounters
 import random
 
 

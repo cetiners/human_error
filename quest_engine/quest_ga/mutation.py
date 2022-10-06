@@ -1,5 +1,4 @@
 
-import numpy as np
 import random
 
 def q_complete_mutation(quest):
@@ -17,7 +16,7 @@ def q_complete_mutation(quest):
 
 def q_point_mutation(quest):
 
-    point = random.randint(0,quest.steps-1)
+    point = quest.fitnesses.index(min(quest.fitnesses))
 
     quest.path[point] = [round(random.uniform(0, 1024-1),1) for i in range(2)] 
         
@@ -25,4 +24,11 @@ def q_point_mutation(quest):
 
     return quest
 
-    
+def q_random_point_mutation(quest):
+
+    point = random.randint(0,quest.steps-1)
+    quest.path[point] = [round(random.uniform(0, 1024-1),1) for i in range(2)] 
+        
+    quest.update()
+
+    return quest

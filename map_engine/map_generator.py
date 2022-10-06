@@ -1,13 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from pmdarima import c
 from skimage.draw import polygon as ployg
 from character_engine.player_character import npc
-from scipy.spatial import Voronoi, voronoi_plot_2d,  cKDTree
+from scipy.spatial import Voronoi, cKDTree
 from map_engine.map_attributer import average_cells, fill_cells, histeq, view_noises
-from map_engine.lloyd_relaxation import relax, voronoi
+from map_engine.lloyd_relaxation import relax
 from map_engine.noise import blurry_lines, toddler
-from tools.utils import map_attribute_checker
+from map_engine.map_attributer import map_attribute_checker
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import random

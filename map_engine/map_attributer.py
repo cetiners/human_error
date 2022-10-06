@@ -1,8 +1,5 @@
-
 from skimage import exposure
 import numpy as np
-
-
 
 view_noises = {
     "terrain" : { 
@@ -63,13 +60,13 @@ view_noises = {
     },
     "story_act" : {
         "atr" :{
-            "act0"      :  [[0,0]],
-            "act1"      :  [[1,1]],
-            "act2"      :  [[2,2]],
+            0      :  [[0,0]],
+            1      :  [[1,1]],
+            2      :  [[2,2]],
             },
         "interval" : 3,
         "atr_names": ["act","act"],
-        "atr_list" : ["act0","act1","act2"]
+        "atr_list" : [0,1,2]
     },
 
 
@@ -121,3 +118,40 @@ def fill_cells(vor, data):
             image[i, j] = data[p]
 
     return image
+
+
+def map_attribute_checker(map_1, map_2, map_1_range, map_2_range,map_name,double=True):
+
+    if not double:
+        map_2,map_2_range = map_1,map_1_range
+
+    map_1_increments = ranger(map_name,map_1_range)
+    map_2_increments = ranger(map_name,map_2_range)
+
+    size = map_1.shape[0]
+
+    attribute_map = np.zeros((size,size))
+    
+    for i in range(size):
+        for j in range(size):
+
+            idx = 0
+            for k in map_1_increments:
+                
+                if map_1[i,j] > k:
+                    idx += 1
+
+            idy = 0
+            for k in map_2_increments:
+                if map_2[i,j] > k:
+                    idy += 1
+
+            for atr_n, atr in view_noises[map_name]["atr"].items():
+
+                if [idx,idy] in atr:
+
+                    attribute_name = atr_n
+
+            attribute_map[i,j] = int(view_noises[map_name]["atr_list"].index(attribute_name))
+
+    return attribute_map

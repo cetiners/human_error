@@ -1,4 +1,3 @@
-from re import T
 import noise
 import numpy as np
 import random
@@ -56,5 +55,19 @@ def blurry_lines(map, vol = 8):
             blurred[x, y] = map[i, j]
 
     return blurred
+
+
+def ranger(map_name,map_1_range):
+
+    r = view_noises[map_name]["interval"]
+    r_b = []
+    min_val = map_1_range[1]
+    max_val = map_1_range[0]
+
+    inc = (max_val-min_val)/r
+
+    for i in range(1,r):
+        r_b.append(min_val + (inc*i))
+    return r_b
 
 
