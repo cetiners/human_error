@@ -100,6 +100,8 @@ class quest:
 
         self.fitnesses = fitnesses
         self.fitness = sum(fitnesses)
+        if self.total_dist/(self.steps-1) > 256:
+            self.fitness -= 1000
         self.freytags_fitnesses = freytags_fitnesses
         self.suitable_fitness = sum([i>-1000 for i in self.fitnesses])
         self.act_fitness = sum([i == self.act for i in self.path_act])

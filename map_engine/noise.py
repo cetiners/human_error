@@ -2,6 +2,7 @@ import noise
 import numpy as np
 import random
 
+
 def toddler(size, res=32, seed=124,  octaves = 10, persistence=0.8, lacunarity = 2, mask=False):
 
     """
@@ -58,6 +59,7 @@ def blurry_lines(map, vol = 8):
 
 
 def ranger(map_name,map_1_range):
+    from map_engine.map_attributer import view_noises
 
     r = view_noises[map_name]["interval"]
     r_b = []

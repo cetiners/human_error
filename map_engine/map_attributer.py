@@ -1,4 +1,5 @@
 from skimage import exposure
+from map_engine.noise import ranger
 import numpy as np
 
 view_noises = {
