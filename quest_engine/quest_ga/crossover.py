@@ -1,4 +1,5 @@
 
+import enum
 import random
 
 
@@ -146,6 +147,24 @@ def q_ar_xo(parent_1,parent_2):
     offspring_2.update()
     
     return offspring_1,offspring_2
+
+
+def curate_xo(q1, q2):
+
+    cut_point = random.randint(1, len(q1[0])-1)
+
+    new1 = q1[0].copy()
+    new2 = q2[0].copy()
+
+    for idx, i in enumerate(new1):
+        if idx > cut_point:
+            new1[idx] = q2[0][idx]
+            new2[idx] = q1[0][idx]
+    
+    q1 = new1
+    q2 = new2
+
+    return q1,q2
 
 
     

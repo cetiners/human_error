@@ -32,3 +32,7 @@ def q_random_point_mutation(quest):
     quest.update()
 
     return quest
+
+
+def curate_mutation():
+    pass

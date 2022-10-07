@@ -33,8 +33,10 @@ def race_bonus(race):
     return bonus
 
 def attribute_picker():
-    # Using the budget system, randomly allocate attribute points. 
+    # Using the budget system, randomly allocate attribute points.
+    
     # Each rank of attribute points has a certain cost, while the player only has access to 27 points.
+
     attributes = ["str","dex","con","wis","cha","int"]
     random.shuffle(attributes)
     pts_cost = {8:0,9:1,10:2,11:3,12:4,13:5,14:7,15:9}

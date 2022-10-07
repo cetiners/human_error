@@ -1,7 +1,8 @@
 import random
 import numpy as np
 from tools.utils import basic_distance
-from quest_engine.freytags_fitness import freytags
+from operator import itemgetter
+from quest_engine.freytags_fitness import freytags,curate_fitness
 from map_engine.map_attributer import view_noises
 from quest_engine.quest_ga.selection import *
 from quest_engine.quest_ga.crossover import *
@@ -59,6 +60,7 @@ class quest:
         for idx, location in enumerate(self.path):
             fitness = 0
             if idx == 0:
+
         ## Punish the quest giver depending on how far they are from a nearest civilisation & if it is in the sea.
                 if view_noises["civilisation"]["atr_list"][(int(self.map.views["civilisation"][int(location[0]), int(location[1])])-1)] == "Wild":
                     fitness -= 1000
@@ -127,7 +129,8 @@ class quest:
 
     def check_difficulty(self):
 
-        self.difficulty = 0
+        self.difficulty = np.mean(sorted(self.check_threat())[-3:])
+
         return self.difficulty
 
     def point_distances(self):
@@ -297,26 +300,89 @@ class quest_library:
         self.map = map
         self.shelf_size = shelf_size
         
-        
         for act in [0,1,2]:
             for steps in [3,4,5]:        
                 for _ in range(self.shelf_size):
                     pop = quest_pop(self.map,act=act, pop_size=self.pop_size, steps=steps)
-                    print(act,steps)
                     ind = pop.evolve(gens=self.gens,early_stop=False, mu_p=self.mu_p, xo=self.xo, mutation=self.mutation,print_it=self.print_it)
                     self.library.append(ind)
 
 
-        def browse(self, number_of_quests=1, act=0, challange_type="dex",steps=3):
-            output = []
+    def browse(self, number_of_quests=1, act=0, challange_type="dex",steps=3):
 
-            while len(output) < number_of_quests:
-                q = random.select(self.library)
-                if q.act == act and q.challange_type == challange_type and q.steps == steps and q not in output:
-                    output.append(q)
+        output = []
 
-            return output
+        while len(output) < number_of_quests:
+            q = random.select(self.library)
 
-        def curate(self):
-            pass
+            if q.act == act and q.challange_type == challange_type and q.steps == steps and q not in output:
+                output.append(q)
+
+        return output
+
+    def curate(self, quest_line_length = 4, max_act=2):
+
+        found = False
+        self.pop = []
+        for _ in range(100):
+            curated = random.sample(self.library, quest_line_length)
+            fitness = curate_fitness(curated, max_act)
+            self.pop.append([curated,fitness])
+
+        gen = 0
+
+        while not found:
+            new_pop = []
+
+            print("Generation: ", gen)
+            
+            while len(new_pop) < 20:
+                used_parents = []
+                suitable = False
+
+                while not suitable:
+                    parent1, parent2 = curate_selection(self.pop)
+
+                    if parent1 in used_parents:
+                        suitable = False
+
+                    elif parent2 in used_parents:
+                        suitable = False
+                        
+                    else:
+                        suitable = True
+                        used_parents.append(parent1)
+                        used_parents.append(parent2)
+
+                    if parent1 != parent2:
+                        suitable = True
+
+                offspring1, offspring2 = curate_xo(parent1, parent2)
+
+                if 0.75 < random.random():
+                    point = random.randint(0,quest_line_length-1)
+                    offspring1[point] = random.choice(self.library)
+
+                if 0.75 < random.random():
+                    point = random.randint(0,quest_line_length-1)
+                    offspring2[point] = random.choice(self.library)
+
+                offspring1  =  [offspring1, curate_fitness(offspring1, max_act)]
+                offspring2  =  [offspring2, curate_fitness(offspring2, max_act)]
+
+                new_pop.append(offspring1)
+
+                if len(new_pop) < 100:    
+                    new_pop.append(offspring2)
+
+            self.pop = new_pop
+            best = sorted(self.pop, key=itemgetter(1))[-1]
+            print("Fitness: ",best[1])
+            gen += 1
+
+            if best[1] > -1000:
+                found = True
+                print(f"Found the required quest line on gen {gen}")
+                self.pop = []
+                return best
 

@@ -101,3 +101,13 @@ def freytags(path):
             freytag_fitness[2] -=  1000
 
     return freytag_fitness
+
+
+def curate_fitness(curated, max_act):
+    
+    fitness = sum(freytags([i.difficulty for i in curated]))
+
+    if max([i.act for i in curated],key=[i.act for i in curated].count) != max_act:
+        fitness -= 1000
+
+    return fitness
