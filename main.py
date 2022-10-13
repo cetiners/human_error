@@ -1,5 +1,5 @@
 from map_engine.map_generator import map
-from encounter_manager.world_encounters import *
+from encounter_engine.world_encounters import *
 import pickle
 from matplotlib import colors
 from quest_engine.quest_generator import *

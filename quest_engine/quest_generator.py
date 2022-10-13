@@ -1,13 +1,18 @@
+import time
 import random
 import numpy as np
-from tools.utils import basic_distance
+import pandas as pd
+
 from operator import itemgetter
-from quest_engine.freytags_fitness import freytags,curate_fitness
+from tools.utils import basic_distance
+
 from map_engine.map_attributer import view_noises
+from character_engine.character import select_npc
+
 from quest_engine.quest_ga.selection import *
 from quest_engine.quest_ga.crossover import *
 from quest_engine.quest_ga.mutation import *
-from character_engine.character import select_npc
+from quest_engine.freytags_fitness import freytags,curate_fitness
 
 
 class quest:
@@ -66,13 +71,13 @@ class quest:
         ## Punish the quest giver depending on how far they are from a nearest civilisation & if it is in the sea.
                 if view_noises["civilisation"]["atr_list"][(int(self.map.views["civilisation"][int(location[0]), int(location[1])])-1)] == "Wild":
                     fitness -= 1000
-                #else:
-                #    for centroid in self.map.atr_centroids["city"]:
-                #        min_dist = 9999999
-                #        dist = basic_distance(location, centroid)
-                #        if dist < min_dist:
-                #            min_dist = dist
-                #    fitness -= min_dist
+                else:
+                    for centroid in self.map.atr_centroids["city"]:
+                        min_dist = 9999999
+                        dist = basic_distance(location, centroid)
+                        if dist < min_dist:
+                            min_dist = dist
+                    fitness -= min_dist
         
         ## If quest key/locks are in sea, punish the fitness substantially.
 
@@ -102,7 +107,7 @@ class quest:
 
         self.fitnesses = fitnesses
         self.fitness = sum(fitnesses)
-        if self.total_dist/(self.steps-1) > 150:
+        if self.total_dist/(self.steps-1) > 200:
             self.fitness -= 1000
         self.freytags_fitnesses = freytags_fitnesses
         self.suitable_fitness = sum([i>-1000 for i in self.fitnesses])
@@ -197,7 +202,6 @@ class quest:
 class quest_pop:
 
     def __init__(self,map,act, pop_size = 20,steps=5):
-
         self.theme = [np.random.choice(["dex", "str", "con", "int", "wis", "cha"]) for i in range(2)]
         self.population = []
         self.map = map
@@ -208,9 +212,8 @@ class quest_pop:
         for _ in range(self.size):
             self.population.append(quest(self.map,act=act,steps=self.steps))
 
-
     def brute_force(self):
-        
+        timestamp = time.time()
         gen = 0
         satisfied = False
 
@@ -226,14 +229,17 @@ class quest_pop:
 
             if best_ind.fitness > -1000:
                 satisfied = True
+                self.elapsed = time.time() - timestamp
+                self.elapsed_gens = gen
                 print(f"Found the required individual on trial {gen}")
                 break
 
         return best_ind
 
-    def evolve(self, early_stop = False, gens=100, mu_p = 0.1, mutation="point",xo = "single_point", print_it=False):
+    def evolve(self, early_stop = False, gens=100, mu_p = 0.1, mutation="point",xo = "single_point", print_it=False, log=False):
 
         gen = 0
+        timestamp = time.time()
         satisfied = False
 
         if self.steps == 1:
@@ -309,16 +315,18 @@ class quest_pop:
             if early_stop:
                 if gen == gens:
                     satisfied = True
+                    self.elapsed = time.time() - timestamp
                     break
 
             else:
                 if best_ind.fitness > -1000:
+                    self.elapsed = time.time() - timestamp
+                    self.elapsed_gens = gen
                     satisfied = True
                     print(f"Found the required individual on gen {gen}")
                     break
 
         return best_ind
-
 
 class quest_library:
 
@@ -327,9 +335,11 @@ class quest_library:
         for key, value in params.items():
             setattr(self, key, value)
 
+        self.timestamp = time.time()
         self.library = []
         self.map = map
         self.shelf_size = shelf_size
+        self.logs = {}
 
         for act in [0,1,2]:
             for steps in [3,4,5]:        
@@ -342,8 +352,15 @@ class quest_library:
                     else:
                         ind = pop.evolve(gens=self.gens,early_stop=False, mu_p=self.mu_p, xo=self.xo, mutation=self.mutation,print_it=self.print_it)
                         ind.place_quest_npc()
+                        
+                    if self.log:
+                        self.logs[_] = [self.shelf_size,act,steps,pop.elapsed, pop.elapsed_gens,self.brute_force]
 
                     self.library.append(ind)
+
+        logs = pd.DataFrame.from_dict(logs).T
+        logs.columns = ["shelf_size","act","steps","elapsed_time","elapsed_gens","brute_force"]
+        logs.to_csv(f"quest_library_logs_{self.timestamp}.csv")
 
 
     def browse(self, number_of_quests=1, act=0, challange_type="dex",steps=3):
@@ -359,6 +376,9 @@ class quest_library:
         return output
 
     def curate(self, quest_line_length = 4, max_act=2):
+
+        timestamp = time.time()
+        curate_logs = {}
 
         found = False
         self.pop = []
@@ -380,6 +400,7 @@ class quest_library:
                 best = sorted(self.pop, key=itemgetter(1))[-1]
                 print("Fitness: ",best[1])
                 gen += 1
+                curate_logs[gen] = [best[1],time.time() - timestamp,quest_line_length,max_act,self.brute_force]
 
                 if best[1] > -1000:
                     found = True
@@ -435,6 +456,7 @@ class quest_library:
                 self.pop = new_pop
                 best = sorted(self.pop, key=itemgetter(1))[-1]
                 print("Fitness: ",best[1])
+                curate_logs[gen] = [best[1],time.time() - timestamp,quest_line_length,max_act,self.brute_force]
                 gen += 1
 
                 if best[1] > -1000:
@@ -443,3 +465,6 @@ class quest_library:
                     self.pop = []
                     return best
 
+        curate_logs = pd.DataFrame.from_dict(curate_logs).T
+        curate_logs.columns = ["fitness","elapsed_time","quest_line_length","max_act","brute_force"]
+        curate_logs.to_csv(f"curation_logs{timestamp}.csv")

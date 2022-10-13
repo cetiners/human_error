@@ -56,12 +56,12 @@ class npc:
 
         self.attributes = {"dex" : self.dex, "str" : self.str, "con" : self.con, "int" : self.int, "wis" : self.wis, "cha" : self.cha}
 
-        self.mod_dex = self.dex + modifier(self.dex)
-        self.mod_str = self.str + modifier(self.str)
-        self.mod_con = self.con + modifier(self.con)
-        self.mod_int = self.int + modifier(self.int)
-        self.mod_wis = self.wis + modifier(self.wis)
-        self.mod_cha = self.cha + modifier(self.cha)
+        self.mod_dex = modifier(self.dex) + self.dex
+        self.mod_str = modifier(self.str) + self.str
+        self.mod_con = modifier(self.con) + self.con
+        self.mod_int = modifier(self.int) + self.int
+        self.mod_wis = modifier(self.wis) + self.wis
+        self.mod_cha = modifier(self.cha) + self.cha
 
         self.mod_attributes = {"dex" : self.mod_dex, "str" : self.mod_str, "con" : self.mod_con, "int" : self.mod_int, "wis" : self.mod_wis, "cha" : self.mod_cha}
 
@@ -222,10 +222,10 @@ class npc:
             bonus = 4
         elif self.level < 17:
             bonus = 5
-        elif self.level < 21:
+        else:
             bonus = 6
 
-        bonus = bonus/len(class_attributes[self.c_class])
+        bonus = int(bonus/len(class_attributes[self.c_class]))
 
         for atr in class_attributes[self.c_class]:
             if atr == "dex":
