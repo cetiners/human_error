@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.draw import polygon as ployg
-from character_engine.player_character import npc
+from character_engine.character import npc
 from scipy.spatial import Voronoi, cKDTree
 from map_engine.map_attributer import average_cells, fill_cells, histeq, view_noises
 from map_engine.lloyd_relaxation import relax

@@ -7,6 +7,7 @@ from map_engine.map_attributer import view_noises
 from quest_engine.quest_ga.selection import *
 from quest_engine.quest_ga.crossover import *
 from quest_engine.quest_ga.mutation import *
+from character_engine.character import select_npc
 
 
 class quest:
@@ -26,7 +27,7 @@ class quest:
     def __init__(self, map,act, steps=5):
         
         self.map = map
-        self.challange_type = [np.random.choice(["dex", "str", "con", "int", "wis", "cha"]) for i in range(2)]     
+        self.challange_type = np.random.choice(["dex", "str", "con", "int", "wis", "cha"])
         self.act = act   
 
         self.steps = steps
@@ -48,6 +49,7 @@ class quest:
         self.path_act = self.act_check()
         self.fitness = self.check_fitness()
         self.path_threat = self.check_threat()
+        self.npc_book = []
 
     def check_fitness(self):
         
@@ -100,7 +102,7 @@ class quest:
 
         self.fitnesses = fitnesses
         self.fitness = sum(fitnesses)
-        if self.total_dist/(self.steps-1) > 256:
+        if self.total_dist/(self.steps-1) > 150:
             self.fitness -= 1000
         self.freytags_fitnesses = freytags_fitnesses
         self.suitable_fitness = sum([i>-1000 for i in self.fitnesses])
@@ -114,6 +116,8 @@ class quest:
         for i in self.path:
             threat_level = view_noises["threat"]["atr_list"][(int(self.map.views["threat"][int(i[0]), int(i[1])])-1)]
             path_threat.append(int(threat_level))
+
+        self.path_threat = path_threat
 
         return path_threat
         
@@ -148,6 +152,22 @@ class quest:
         if len(distances) == 0:
             self.ind_dist = distances = [0]
 
+    def place_quest_npc(self):
+
+        npc_book = []
+        for idx,i in enumerate(self.is_npc):
+            if i == 1:
+                npc = select_npc(self.challange_type)
+                npc.level_up(self.path_threat[idx]*2)
+                npc_book.append(npc)
+            else:
+                npc_book.append(None)
+
+        self.npc_book = npc_book
+
+        return self.npc_book
+
+
     def update(self):
 
         self.point_distances()
@@ -155,6 +175,8 @@ class quest:
         self.check_difficulty()
         self.act_check()
         self.check_fitness()
+        #self.npc_book = self.place_quest_npc()
+
 
     def summary(self):
         print("Quest type: ", self.challange_type)
@@ -181,14 +203,36 @@ class quest_pop:
         self.map = map
         self.size = pop_size
         self.steps = steps
+        self.act = act
 
         for _ in range(self.size):
             self.population.append(quest(self.map,act=act,steps=self.steps))
 
+
+    def brute_force(self):
+        
+        gen = 0
+        satisfied = False
+
+        while not satisfied:
+            self.population = []
+            for _ in range(self.size):
+                self.population.append(quest(self.map,act=self.act,steps=self.steps))
+
+            gen += 1
+
+            best_ind =  sorted(self.population, key=operator.attrgetter('fitness'))[-1]
+            self.best_ind = best_ind
+
+            if best_ind.fitness > -1000:
+                satisfied = True
+                print(f"Found the required individual on trial {gen}")
+                break
+
+        return best_ind
+
     def evolve(self, early_stop = False, gens=100, mu_p = 0.1, mutation="point",xo = "single_point", print_it=False):
 
-        save_dict = []
-        
         gen = 0
         satisfied = False
 
@@ -254,25 +298,10 @@ class quest_pop:
 
             self.population = new_pop
 
-            ## Save good individuals to a dictionary.
-            #if save_inds:
-            #    for i in self.population:
-            #        if i.fitness > -600:
-            #            if len(library) == library_size:
-            #                satisfied = True
-            #                print(f"Found the required individuals on gen {gen}")
-            #                break
-            #            else:
-            #                library.append(i)
-            #                print(f"Total found so far: {len(library)}")
-
-
             gen += 1
             
             best_ind =  sorted(self.population, key=operator.attrgetter('fitness'))[-1]
             self.best_ind = best_ind
-
-            save_dict.append(best_ind.fitness)
 
             if print_it:
                 print(f"Best ind in gen {gen} is {best_ind.fitness}")
@@ -301,12 +330,19 @@ class quest_library:
         self.library = []
         self.map = map
         self.shelf_size = shelf_size
-        
+
         for act in [0,1,2]:
             for steps in [3,4,5]:        
                 for _ in range(self.shelf_size):
                     pop = quest_pop(self.map,act=act, pop_size=self.pop_size, steps=steps)
-                    ind = pop.evolve(gens=self.gens,early_stop=False, mu_p=self.mu_p, xo=self.xo, mutation=self.mutation,print_it=self.print_it)
+
+                    if self.brute_force:
+                        ind = pop.brute_force()
+                        ind.place_quest_npc()
+                    else:
+                        ind = pop.evolve(gens=self.gens,early_stop=False, mu_p=self.mu_p, xo=self.xo, mutation=self.mutation,print_it=self.print_it)
+                        ind.place_quest_npc()
+
                     self.library.append(ind)
 
 
@@ -333,58 +369,77 @@ class quest_library:
 
         gen = 0
 
-        while not found:
-            new_pop = []
-
-            print("Generation: ", gen)
-            
-            while len(new_pop) < 20:
-                used_parents = []
-                suitable = False
-
-                while not suitable:
-                    parent1, parent2 = curate_selection(self.pop)
-
-                    if parent1 in used_parents:
-                        suitable = False
-
-                    elif parent2 in used_parents:
-                        suitable = False
-                        
-                    else:
-                        suitable = True
-                        used_parents.append(parent1)
-                        used_parents.append(parent2)
-
-                    if parent1 != parent2:
-                        suitable = True
-
-                offspring1, offspring2 = curate_xo(parent1, parent2)
-
-                if 0.75 < random.random():
-                    point = random.randint(0,quest_line_length-1)
-                    offspring1[point] = random.choice(self.library)
-
-                if 0.75 < random.random():
-                    point = random.randint(0,quest_line_length-1)
-                    offspring2[point] = random.choice(self.library)
-
-                offspring1  =  [offspring1, curate_fitness(offspring1, max_act)]
-                offspring2  =  [offspring2, curate_fitness(offspring2, max_act)]
-
-                new_pop.append(offspring1)
-
-                if len(new_pop) < 100:    
-                    new_pop.append(offspring2)
-
-            self.pop = new_pop
-            best = sorted(self.pop, key=itemgetter(1))[-1]
-            print("Fitness: ",best[1])
-            gen += 1
-
-            if best[1] > -1000:
-                found = True
-                print(f"Found the required quest line on gen {gen}")
+        if self.brute_force:
+            while not found:
                 self.pop = []
-                return best
+                for _ in range(100):
+                    curated = random.sample(self.library, quest_line_length)
+                    fitness = curate_fitness(curated, max_act)
+                    self.pop.append([curated,fitness])
+
+                best = sorted(self.pop, key=itemgetter(1))[-1]
+                print("Fitness: ",best[1])
+                gen += 1
+
+                if best[1] > -1000:
+                    found = True
+                    print(f"Found the required quest line on trial {gen}")
+                    self.pop = []
+                    return best
+
+        else:
+            while not found:
+                new_pop = []
+
+                print("Generation: ", gen)
+
+                while len(new_pop) < 20:
+                    used_parents = []
+                    suitable = False
+
+                    while not suitable:
+                        parent1, parent2 = curate_selection(self.pop)
+
+                        if parent1 in used_parents:
+                            suitable = False
+
+                        elif parent2 in used_parents:
+                            suitable = False
+
+                        else:
+                            suitable = True
+                            used_parents.append(parent1)
+                            used_parents.append(parent2)
+
+                        if parent1 != parent2:
+                            suitable = True
+
+                    offspring1, offspring2 = curate_xo(parent1, parent2)
+
+                    if 0.75 < random.random():
+                        point = random.randint(0,quest_line_length-1)
+                        offspring1[point] = random.choice(self.library)
+
+                    if 0.75 < random.random():
+                        point = random.randint(0,quest_line_length-1)
+                        offspring2[point] = random.choice(self.library)
+
+                    offspring1  =  [offspring1, curate_fitness(offspring1, max_act)]
+                    offspring2  =  [offspring2, curate_fitness(offspring2, max_act)]
+
+                    new_pop.append(offspring1)
+
+                    if len(new_pop) < 100:    
+                        new_pop.append(offspring2)
+
+                self.pop = new_pop
+                best = sorted(self.pop, key=itemgetter(1))[-1]
+                print("Fitness: ",best[1])
+                gen += 1
+
+                if best[1] > -1000:
+                    found = True
+                    print(f"Found the required quest line on gen {gen}")
+                    self.pop = []
+                    return best
 

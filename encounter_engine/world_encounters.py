@@ -201,6 +201,48 @@ class pack_population:
             self.population.append(pack(map,type=self.type,size = self.pack_size,encounter_type = self.encounter_type))
 
 
+    def brute_force(self):
+        """
+            Completely randomly generate the coordinates of the encounters until fitness is satisfied.
+        """
+        satisfied = False
+        added = 0
+
+        while not satisfied:
+
+            self.population = []
+
+            for _ in range(self.size):
+                self.population.append(pack(self.map,type=self.type,size = self.pack_size,encounter_type = self.encounter_type))
+            
+
+            n_ind = required_n_enc[self.type]
+
+            for pack_b in self.population:
+                for ind_b in pack_b.pack:
+                    if ind_b.fitness > -1000:
+                        if ind_b.coord not in self.world_atlas:
+                            self.yellow_pages.append(ind_b)
+                            self.world_atlas.append(ind_b.coord)
+                            added += 1
+                            if added == n_ind:
+                                satisfied = True
+                                break
+
+                if satisfied:
+                    break
+
+            print(f'Random trial {self.gen}, found individuals: {added}')
+            
+            if added == n_ind:
+                print(f'Found required individuals: {added}, on trial {self.gen}')
+                satisfied = True
+                break
+
+
+            self.gen += 1
+
+
     def evolve(self,gens=50, mu_p=0.01,crossover="ax_pmx",mutation="inversion", early_stop=False):
 
         satisfied = False
@@ -335,14 +377,18 @@ class w_encounter_manager:
         self.individuals = []
         self.map = map
 
-    def let_there_be_light(self, pop_size=10, pack_size=10):
+    def let_there_be_light(self, pop_size=10, pack_size=10, brute_force=False):
 
         for encounter in self.encounters:
 
             print(f"\nGenerating {encounter} encounters, {required_n_enc[encounter]} required.")
 
             pop = pack_population(self.map,pop_size=pop_size,pack_size=pack_size,type=encounter,world_atlas=self.coordinates,yellow_pages=self.individuals)
-            pop.evolve(mu_p=0.22,mutation="complete",crossover="ax_pmx")
+
+            if brute_force:
+                pop.brute_force()
+            else:
+                pop.evolve(mu_p=0.22,mutation="complete",crossover="ax_pmx")
 
             self.individuals == pop.yellow_pages
             self.coordinates == [i.coord for i in pop.yellow_pages]
