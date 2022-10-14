@@ -117,3 +117,11 @@ for q in quest_line[0]:
 
 
 fig.show()
+
+
+with open("quest_library", "wb") as f:
+    ql = pickle.dump(ql,f)
+
+
+with open("quest_library", "rb") as f:
+    ql = pickle.load(f)

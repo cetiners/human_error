@@ -192,7 +192,6 @@ class quest:
         self.act_check()
         self.check_fitness()
         self.hold_npc_place()
-        #self.npc_book = self.place_quest_npc()
 
 
     def summary(self):
@@ -209,11 +208,10 @@ class quest:
         print("Quest path act: ", self.path_act)
 
 
-        
-
 class quest_pop:
 
     def __init__(self,map,act, pop_size = 20,steps=5):
+
         self.theme = [np.random.choice(["dex", "str", "con", "int", "wis", "cha"]) for i in range(2)]
         self.population = []
         self.map = map
@@ -225,6 +223,7 @@ class quest_pop:
             self.population.append(quest(self.map,act=act,steps=self.steps))
 
     def brute_force(self):
+
         timestamp = time.time()
         gen = 0
         satisfied = False
@@ -248,7 +247,7 @@ class quest_pop:
 
         return best_ind
 
-    def evolve(self, early_stop = False, gens=100, mu_p = 0.1, mutation="point",xo = "single_point", print_it=False, log=False):
+    def evolve(self, early_stop = False, gens=100, mu_p = 0.1, mutation="point",xo = "single_point", print_it=False):
 
         gen = 0
         timestamp = time.time()
@@ -324,18 +323,20 @@ class quest_pop:
             if print_it:
                 print(f"Best ind in gen {gen} is {best_ind.fitness}")
 
+            if best_ind.fitness > -1000:
+                self.elapsed = time.time() - timestamp
+                self.elapsed_gens = gen
+                self.success = True
+                satisfied = True
+                print(f"Found the required individual on gen {gen}")
+                break
+
             if early_stop:
                 if gen == gens:
                     satisfied = True
                     self.elapsed = time.time() - timestamp
-                    break
-
-            else:
-                if best_ind.fitness > -1000:
-                    self.elapsed = time.time() - timestamp
                     self.elapsed_gens = gen
-                    satisfied = True
-                    print(f"Found the required individual on gen {gen}")
+                    self.success = False
                     break
 
         return best_ind
@@ -361,16 +362,16 @@ class quest_library:
                         ind = pop.brute_force()
                         ind.place_quest_npc()
                     else:
-                        ind = pop.evolve(gens=self.gens,early_stop=False, mu_p=self.mu_p, xo=self.xo, mutation=self.mutation,print_it=self.print_it)
+                        ind = pop.evolve(gens=self.gens,early_stop=self.early_stop, mu_p=self.mu_p, xo=self.xo, mutation=self.mutation,print_it=self.print_it)
                         ind.place_quest_npc()
                         
                     if self.log:
-                        self.logs[_] = [self.shelf_size,act,steps,pop.elapsed, pop.elapsed_gens,self.brute_force,self.xo,self.mutation,self.mu_p]
+                        self.logs[_] = [ind.fitness,self.shelf_size,act,steps,pop.elapsed, pop.elapsed_gens,self.brute_force,self.xo,self.mutation,self.mu_p,pop.success]
 
                     self.library.append(ind)
 
         logs = pd.DataFrame.from_dict(self.logs).T
-        logs.columns = ["shelf_size","act","steps","elapsed_time","elapsed_gens","brute_force","crossover","mutation","mutation_probability"]
+        logs.columns = ["fitness","shelf_size","act","steps","elapsed_time","elapsed_gens","brute_force","crossover","mutation","mutation_probability","success"]
         logs.to_csv(f"logs/quest_library_logs_{self.timestamp}.csv")
 
 

@@ -144,6 +144,7 @@ class pack:
         average_fitness = sum([ind.check_fitness() for ind in self.pack])/self.size
 
         self.pack_fitness = average_fitness
+        
         return average_fitness
 
     def update_pack_coord(self):
