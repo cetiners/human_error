@@ -18,9 +18,9 @@ def freytags(path):
 
     elif steps == 3:
 
-        if path[0] >= path[2]:
-            freytag_fitness[0] -=  1000
-            freytag_fitness[2] -=  1000
+        #if path[0] >= path[2]:
+        #    freytag_fitness[0] -=  1000
+        #    freytag_fitness[2] -=  1000
 
 
         if path[0] >= path[1]:
@@ -34,9 +34,9 @@ def freytags(path):
 
     elif steps == 4:
 
-        if path[0] >= path[3]:
-            freytag_fitness[0] -=  1000
-            freytag_fitness[3] -=  1000
+        #if path[0] >= path[3]:
+        #    freytag_fitness[0] -=  1000
+        #    freytag_fitness[3] -=  1000
         
         if path[0] >= path[1]:
             freytag_fitness[0] -=  1000
@@ -60,9 +60,9 @@ def freytags(path):
         
 
     elif steps == 5:
-        if path[0] >= path[4]:
-            freytag_fitness[0] -=  1000
-            freytag_fitness[4] -=  1000
+        #if path[0] >= path[4]:
+        #    freytag_fitness[0] -=  1000
+        #    freytag_fitness[4] -=  1000
 
         if path[0] >= path[3]:
             freytag_fitness[0] -=  1000

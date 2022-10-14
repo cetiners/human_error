@@ -47,21 +47,21 @@ class npc:
         atr = attribute_picker()
         bonus = race_bonus(self.c_race)
 
-        self.dex = atr["dex"] + bonus.dex.values[0]
-        self.str = atr["str"] + bonus.str.values[0]
-        self.con = atr["con"] + bonus.con.values[0]
-        self.int = atr["int"] + bonus.int.values[0]
-        self.wis = atr["wis"] + bonus.wis.values[0]
-        self.cha = atr["cha"] + bonus.cha.values[0]
+        self.dex = int(atr["dex"] + bonus.dex.values[0])
+        self.str = int(atr["str"] + bonus.str.values[0])
+        self.con = int(atr["con"] + bonus.con.values[0])
+        self.int = int(atr["int"] + bonus.int.values[0])
+        self.wis = int(atr["wis"] + bonus.wis.values[0])
+        self.cha = int(atr["cha"] + bonus.cha.values[0])
 
         self.attributes = {"dex" : self.dex, "str" : self.str, "con" : self.con, "int" : self.int, "wis" : self.wis, "cha" : self.cha}
 
-        self.mod_dex = modifier(self.dex) + self.dex
-        self.mod_str = modifier(self.str) + self.str
-        self.mod_con = modifier(self.con) + self.con
-        self.mod_int = modifier(self.int) + self.int
-        self.mod_wis = modifier(self.wis) + self.wis
-        self.mod_cha = modifier(self.cha) + self.cha
+        self.mod_dex = int(modifier(self.dex) + self.dex)
+        self.mod_str = int(modifier(self.str) + self.str)
+        self.mod_con = int(modifier(self.con) + self.con)
+        self.mod_int = int(modifier(self.int) + self.int)
+        self.mod_wis = int(modifier(self.wis) + self.wis)
+        self.mod_cha = int(modifier(self.cha) + self.cha)
 
         self.mod_attributes = {"dex" : self.mod_dex, "str" : self.mod_str, "con" : self.mod_con, "int" : self.mod_int, "wis" : self.mod_wis, "cha" : self.mod_cha}
 
@@ -300,13 +300,14 @@ class npc:
 
 
     def character_sheet(self):
-        print(f"Meet {self.name}!, a {self.ptype}\n")
-        print(f"Character race: {self.c_race}")
-        print(f"Character class: {self.c_class}\n")
-        print(f" Strength: {self.str} \n Dexterity: {self.dex} \n Constitution {self.con} \n Intelligence: {self.int} \n Wisdom: {self.wis} \n Charisma: {self.cha}")
-        print(f"A {self.size} sized adventurer with a speed of {self.speed/6} feet per second.")
-        print(f"{self.name} starts this adventure with {self.wealth} coins.")
-        print(self.state)
+        print(f"Meet {self.name}!, a level {self.level} {self.ptype}")
+        print(f"Race: {self.c_race}")
+        print(f"Class: {self.c_class}")
+        print(f" Strength: {self.mod_str} \n Dexterity: {self.mod_dex} \n Constitution {self.mod_con} \n Intelligence: {self.mod_int} \n Wisdom: {self.mod_wis} \n Charisma: {self.mod_cha}")
+        #print(f"A {self.size} sized adventurer with a speed of {self.speed/6} feet per second.")
+        print(f"Inventory: {self.wealth} coins.\n")
+        print("-------------------------------------------")
+        #print(self.state)
 
 
 class_attributes = {

@@ -47,11 +47,12 @@ params = {
 ql = quest_library(nw,shelf_size=100,params=params)
 
 
-
 cmap = colors.ListedColormap(
     ["blue", "white", "yellowgreen", "khaki", "lawngreen", "slategrey", "darkgreen"])
 cmap_arcs = colors.ListedColormap(
     ["blue", "khaki", "khaki", "khaki", "khaki", "khaki", "khaki", "brown", "brown", "brown", "black", ])
+
+q_colors = ["red","goldenrod","purple","darkgreen","black"]
 
 ter = nw.views["terrain"].copy()
 civ = nw.views["civilisation"].copy()
@@ -60,32 +61,59 @@ arc = nw.views["story_act"].copy()
 
 fig, ax = plt.subplots(2, 2)
 fig.set_dpi(150)
-fig.set_size_inches(24, 24)
+fig.set_size_inches(15, 15)
 
 ax[0, 1].imshow(ter.T, cmap=cmap, alpha=.66)
 ax[0, 1].set_title("Terrain")
-ax[0, 1].scatter(lst1, lst2, color="black", s=20)
 
-#ax[0, 1].scatter([i[0] for i in q.path], [i[1] for i in q.path], color="black", s=15)
-#ax[0, 1].plot([i[0] for i in q.path], [i[1] for i in q.path], color="red",linestyle="-.",linewidth=1, alpha=.5)
+j = 0
+for q in quest_line[0]:
+    
+    ax[0, 1].scatter([i[0] for i in q.path], [i[1] for i in q.path], color=q_colors[j], s=15)
+    ax[0, 1].plot([i[0] for i in q.path], [i[1] for i in q.path], color=q_colors[j],linestyle="dotted",linewidth=1)
+    j += 1
+
+    for i in range(len(q.path)):
+        ax[0, 1].annotate(i+1,(q.path[i][0], q.path[i][1]),fontsize=12,fontweight="bold")
+  
 
 ax[1, 1].imshow(civ.T, cmap=cmap_arcs, alpha=0.66)
 ax[1, 1].set_title("Civilisation")
-ax[1, 1].scatter(lst1, lst2, color="black", s=20)
 
-#ax[1, 1].scatter([i[0] for i in q.path], [i[1] for i in q.path], color="black", s=15)
-#ax[1, 1].plot([i[0] for i in q.path], [i[1] for i in q.path], color="red",linestyle="-.",linewidth=1, alpha=.5)
+j = 0
+for q in quest_line[0]:
+
+    ax[1, 1].scatter([i[0] for i in q.path], [i[1] for i in q.path], color=q_colors[j], s=15)
+    ax[1, 1].plot([i[0] for i in q.path], [i[1] for i in q.path],color=q_colors[j],linestyle="dotted",linewidth=1)
+    j += 1
+
+    for i in range(len(q.path)):
+        ax[1, 1].annotate(i+1,(q.path[i][0], q.path[i][1]),fontsize=12,fontweight="bold")
 
 ax[1, 0].imshow(thr.T, cmap="Reds", alpha=0.66)
 ax[1, 0].set_title("Threat")
-ax[1, 0].scatter(lst1, lst2, color="black", s=20)
 
-#ax[1, 0].scatter([i[0] for i in q.path], [i[1] for i in q.path], color="black", s=15)
-#ax[1, 0].plot([i[0] for i in q.path], [i[1] for i in q.path], color="red",linestyle="-.",linewidth=1, alpha=.5)
+j=0
+for q in quest_line[0]:
+    ax[1, 0].scatter([i[0] for i in q.path], [i[1] for i in q.path], color=q_colors[j], s=15)
+    ax[1, 0].plot([i[0] for i in q.path], [i[1] for i in q.path],color=q_colors[j],linestyle="dotted",linewidth=1)
+    j += 1
+
+    for i in range(len(q.path)):
+        ax[1, 0].annotate(i+1,(q.path[i][0], q.path[i][1]),fontsize=12,fontweight="bold")
 
 ax[0, 0].imshow(arc.T, cmap="Blues", alpha=0.66)
 ax[0, 0].set_title("Story Act")
-ax[0, 0].scatter(lst1, lst2, color="black", s=20)
 
-#ax[0, 0].scatter([i[0] for i in q.path], [i[1] for i in q.path], color="black", s=15)
-#ax[0, 0].plot([i[0] for i in q.path], [i[1] for i in q.path], color="red",linestyle="-.",linewidth=1, alpha=.5)
+j=0
+for q in quest_line[0]:
+    ax[0, 0].scatter([i[0] for i in q.path], [i[1] for i in q.path], color=q_colors[j], s=15)
+    ax[0, 0].plot([i[0] for i in q.path], [i[1] for i in q.path], color=q_colors[j],linestyle="dotted",linewidth=1)
+
+    j += 1
+
+    for i in range(len(q.path)):
+        ax[0, 0].annotate(i+1,(q.path[i][0], q.path[i][1]),fontsize=12,fontweight="bold")
+
+
+fig.show()

@@ -37,8 +37,7 @@ class quest:
 
         self.steps = steps
         self.path = []
-        self.is_npc = [random.getrandbits(1) for i in range(self.steps-1)]
-        self.is_npc.append(1)
+        
 
         for _ in range(self.steps):
 
@@ -46,7 +45,7 @@ class quest:
 
         # Chance to finish the quest at the quest giver.
         
-        if random.random() < 0.50:
+        if random.random() < 0.70:
                 self.path[-1] = self.path[0]
 
         self.point_distances()
@@ -54,6 +53,7 @@ class quest:
         self.path_act = self.act_check()
         self.fitness = self.check_fitness()
         self.path_threat = self.check_threat()
+        self.is_npc = self.hold_npc_place()
         self.npc_book = []
 
     def check_fitness(self):
@@ -172,6 +172,17 @@ class quest:
 
         return self.npc_book
 
+    def hold_npc_place(self):
+        is_npc = [0 for i in range(self.steps)]
+
+        if random.random() < 0.90:
+            is_npc[0] = 1
+
+        is_npc[max(range(len(self.path_threat)), key=self.path_threat.__getitem__)] = 1
+        self.is_npc = is_npc
+
+        return self.is_npc
+
 
     def update(self):
 
@@ -180,6 +191,7 @@ class quest:
         self.check_difficulty()
         self.act_check()
         self.check_fitness()
+        self.hold_npc_place()
         #self.npc_book = self.place_quest_npc()
 
 
@@ -330,20 +342,19 @@ class quest_pop:
 
 class quest_library:
 
-    def __init__(self, map,params, shelf_size=50):
+    def __init__(self,params):
 
         for key, value in params.items():
             setattr(self, key, value)
 
         self.timestamp = time.time()
         self.library = []
-        self.map = map
-        self.shelf_size = shelf_size
         self.logs = {}
 
         for act in [0,1,2]:
             for steps in [3,4,5]:        
                 for _ in range(self.shelf_size):
+                    
                     pop = quest_pop(self.map,act=act, pop_size=self.pop_size, steps=steps)
 
                     if self.brute_force:
@@ -354,13 +365,13 @@ class quest_library:
                         ind.place_quest_npc()
                         
                     if self.log:
-                        self.logs[_] = [self.shelf_size,act,steps,pop.elapsed, pop.elapsed_gens,self.brute_force]
+                        self.logs[_] = [self.shelf_size,act,steps,pop.elapsed, pop.elapsed_gens,self.brute_force,self.xo,self.mutation,self.mu_p]
 
                     self.library.append(ind)
 
-        logs = pd.DataFrame.from_dict(logs).T
-        logs.columns = ["shelf_size","act","steps","elapsed_time","elapsed_gens","brute_force"]
-        logs.to_csv(f"quest_library_logs_{self.timestamp}.csv")
+        logs = pd.DataFrame.from_dict(self.logs).T
+        logs.columns = ["shelf_size","act","steps","elapsed_time","elapsed_gens","brute_force","crossover","mutation","mutation_probability"]
+        logs.to_csv(f"logs/quest_library_logs_{self.timestamp}.csv")
 
 
     def browse(self, number_of_quests=1, act=0, challange_type="dex",steps=3):
@@ -467,4 +478,4 @@ class quest_library:
 
         curate_logs = pd.DataFrame.from_dict(curate_logs).T
         curate_logs.columns = ["fitness","elapsed_time","quest_line_length","max_act","brute_force"]
-        curate_logs.to_csv(f"curation_logs{timestamp}.csv")
+        curate_logs.to_csv(f"logs/curation_logs_{timestamp}.csv")
