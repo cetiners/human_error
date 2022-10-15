@@ -6,7 +6,8 @@ from operator import itemgetter
 
 def q_rank_selection(population):
 
-    ranked_pop = sorted(population.population, key=operator.attrgetter('fitness',"act_fitness","suitable_fitness","total_dist"))
+    ranked_pop = sorted(population.population, key=operator.attrgetter('fitness',"act_fitness",
+                                                            "suitable_fitness","total_dist"))
     
     rank_sum = (population.size * (population.size +1) / 2)
 

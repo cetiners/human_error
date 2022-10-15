@@ -195,17 +195,21 @@ class quest:
 
 
     def summary(self):
-        print("Quest type: ", self.challange_type)
+        print("Quest challange type: ", self.challange_type)
         print("Quest difficulty: ", self.difficulty)
         print("Quest act: ", self.act)
         print("Quest steps: ", self.steps)
         print("Quest total distance: ", self.total_dist)
         print("Quest fitness: ", self.fitness)
-        print("Quest freytags fitness: ", self.freytags_fitnesses)
         print("Quest fitnesses: ", self.suitable_fitness)
+        print("Quest freytags fitness: ", self.freytags_fitnesses)
         print("Quest path: ", self.path)
         print("Quest path threat: ", self.path_threat)
         print("Quest path act: ", self.path_act)
+        print("Quest path act fitness: ", self.act_fitness)
+        print("Quest path npc: ", self.is_npc)
+        print("Quest path npc book: ", self.npc_book)
+        print("Quest path distances: ", self.ind_dist)
 
 
 class quest_pop:
