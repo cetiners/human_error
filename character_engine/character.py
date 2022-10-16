@@ -304,7 +304,7 @@ class npc:
         print(f"Race: {self.c_race}")
         print(f"Class: {self.c_class}")
         print(f" Strength: {self.mod_str} \n Dexterity: {self.mod_dex} \n Constitution {self.mod_con} \n Intelligence: {self.mod_int} \n Wisdom: {self.mod_wis} \n Charisma: {self.mod_cha}")
-        #print(f"A {self.size} sized adventurer with a speed of {self.speed/6} feet per second.")
+        print(f"A {self.size} sized character with a speed of {self.speed/6} feet per second.")
         print(f"Inventory: {self.wealth} coins.\n")
         print("-------------------------------------------")
         #print(self.state)

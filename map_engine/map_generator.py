@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.draw import polygon as ployg
@@ -7,8 +8,10 @@ from map_engine.map_attributer import average_cells, fill_cells, histeq, view_no
 from map_engine.lloyd_relaxation import relax
 from map_engine.noise import blurry_lines, toddler
 from map_engine.map_attributer import map_attribute_checker
+
+from encounter_engine.world_encounters import encounter_biomes
 import matplotlib.pyplot as plt
-import matplotlib.colors
+from matplotlib import colors
 import random
 import json
 
@@ -83,6 +86,8 @@ class map:
         self.vors = {}
         self.centroids = {}
         self.interactions = {}
+
+        self.meta = {}
          
 
     def place_character(self):
@@ -96,11 +101,15 @@ class map:
         # Place centroids to be used as region centres.
         centroids = np.random.randint(0,self.size, (n_locations+2, 2))
 
+        self.meta["initial_centroids"] = centroids
+
         # Generate Voronoi regions (All points closer to one specific centroid is in a region.)
 
         if relaxed:
 
             centroids = relax(centroids,self.size,k=10)
+
+            self.meta["relaxed_centroids"] = centroids
 
         self.centroids[name] = centroids
 
@@ -129,12 +138,16 @@ class map:
             rr, cc = rr[in_box], cc[in_box]
             # Paint image
             vor_map[rr, cc] = i
+
+        self.meta["unblurred"] = vor_map
         
         if blurred:
             self.views[name] = blurry_lines(vor_map)
             
         else:
             self.views[name] = vor_map
+
+        self.meta["final"] = vor_map
 
         self.vors[name] = vor
         self.location_coordinates[name] = vor.points
@@ -179,6 +192,8 @@ class map:
         lacunarity = 2
         mask = toddler(size=1024, seed=seed,res=res, octaves = octaves, persistence = persistence, lacunarity = lacunarity,mask=True)
 
+        self.meta["sea_mask"] = mask
+
         for view in self.views:
             self.views[view] += 1
             self.views[view] *= mask
@@ -217,24 +232,78 @@ class map:
 
         return print("Centroids attributed, attributes centroited")
         
-    def print_map(self,name=""):
-        cmap="inferno"
-        with open('/Users/cetiners/Desktop/Thesis/human_error/tools/utils.txt') as f:
-            pcolors = f.read()
-            [[0, 0.1, 0.5, 0.95, 1.0], ["dodgerblue","moccasin","green","gray","white"]]
-        pcolors = json.loads(pcolors)
+    def printer(self, alpha = .60, view_names = ["terrain","civilisation","threat","story_act"], quest_line = "", quest = "",encounters = "", save=False):
+        """
+        Prints all views, events and quests that are generated in the map.
+        """
 
-        if name in pcolors.keys():
-            cvals  = pcolors[name][0]
-            colors  = pcolors[name][1]
-            tuples = list(zip(cvals, colors))
-            cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", tuples)
-        
-        fig, ax = plt.subplots(1,1)
-        fig.set_dpi(150)
-        fig.set_size_inches(20, 14)
-        ax.imshow(self.views[name],cmap)
+        terrain_cmap = colors.ListedColormap(
+    ["blue", "white", "yellowgreen", "khaki", "lawngreen", "slategrey", "darkgreen"])
 
+        civilisation_cmap = colors.ListedColormap(
+    ["blue", "khaki", "khaki", "khaki", "khaki", "khaki", "khaki", "brown", "brown", "brown", "black", ])
+
+        quest_cmap = ["red","goldenrod","purple","darkgreen","black"]
+
+        encounter_cmap = ["gray","red","brown","purple"]
+
+        for idx, view_name in enumerate(view_names):
+
+            view = self.views[view_name]
+            
+            fig, ax = plt.subplots()
+            fig.set_dpi(200)
+            fig.set_size_inches(10,10)
+            ax.imshow(view.T, cmap=[terrain_cmap,civilisation_cmap,"Reds","Blues"][idx], alpha = alpha)
+            ax.set_title(view_name.title())
+
+            if quest_line != "":
+                j = 0
+                for q in quest_line[0]:
+                    ax.scatter([i[0] for i in q.path], [i[1] for i in q.path], color=quest_cmap[j],marker="*", s=15)
+                    ax.plot([i[0] for i in q.path], [i[1] for i in q.path], color=quest_cmap[j],linestyle="dotted",linewidth=1)
+
+                    j += 1
+                    for i in range(len(q.path)):
+                        if i == 0:
+                            text = "QT"
+                        else:
+                            text = i+1
+                        ax.annotate(text,(q.path[i][0], q.path[i][1]),fontsize=12)
+
+            if quest != "":
+                ax.scatter([i[0] for i in quest.path], [i[1] for i in quest.path], color="maroon",marker="*", s=15)
+                ax.plot([i[0] for i in quest.path], [i[1] for i in quest.path], color="maroon",linestyle="dotted",linewidth=1)
+
+                for i in range(len(quest.path)):
+                    if i == 0:
+                        text = "QT"
+                    else:
+                        text = i+1
+                    ax.annotate(text,(quest.path[i][0], quest.path[i][1]),fontsize=12)
+
+            if encounters != "":
+
+                enc_dict = {}
+
+                for i in encounter_biomes.keys():
+                    enc_dict[i] = []
+
+                for encounter in encounters:
+
+                    enc_dict[encounter.encounter_type] = encounter.coord
+
+                for idx, encounter_type in enumerate(enc_dict.keys()):
+                    x = [i[0] for i in enc_dict[encounter_type]]
+                    y = [i[1] for i in enc_dict[encounter_type]]
+
+                    ax.scatter(x,y,c=encounter_cmap[idx],s=10)
+
+            if save:
+
+                fig.savefig(f"/logs/prints/{view_name}_map_{time.time()}.png")
+
+            fig.show()
 
 
     

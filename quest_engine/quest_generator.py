@@ -374,9 +374,10 @@ class quest_library:
 
                     self.library.append(ind)
 
-        logs = pd.DataFrame.from_dict(self.logs).T
-        logs.columns = ["fitness","shelf_size","act","steps","elapsed_time","elapsed_gens","brute_force","crossover","mutation","mutation_probability","success"]
-        logs.to_csv(f"logs/quest_library_logs_{self.timestamp}.csv")
+        if self.log:
+            logs = pd.DataFrame.from_dict(self.logs).T
+            logs.columns = ["fitness","shelf_size","act","steps","elapsed_time","elapsed_gens","brute_force","crossover","mutation","mutation_probability","success"]
+            logs.to_csv(f"logs/quest_library_logs_{self.timestamp}.csv")
 
 
     def browse(self, number_of_quests=1, act=0, challange_type="dex",steps=3):
@@ -391,7 +392,7 @@ class quest_library:
 
         return output
 
-    def curate(self, quest_line_length = 4, max_act=2):
+    def curate(self, quest_line_length = 4, max_act=2, min_act = 0, log = False):
 
         timestamp = time.time()
         curate_logs = {}
@@ -400,7 +401,7 @@ class quest_library:
         self.pop = []
         for _ in range(100):
             curated = random.sample(self.library, quest_line_length)
-            fitness = curate_fitness(curated, max_act)
+            fitness = curate_fitness(curated, max_act,min_act)
             self.pop.append([curated,fitness])
 
         gen = 0
@@ -410,13 +411,14 @@ class quest_library:
                 self.pop = []
                 for _ in range(100):
                     curated = random.sample(self.library, quest_line_length)
-                    fitness = curate_fitness(curated, max_act)
+                    fitness = curate_fitness(curated, max_act,min_act)
                     self.pop.append([curated,fitness])
 
                 best = sorted(self.pop, key=itemgetter(1))[-1]
                 print("Fitness: ",best[1])
                 gen += 1
-                curate_logs[gen] = [best[1],time.time() - timestamp,quest_line_length,max_act,self.brute_force]
+                if log:
+                    curate_logs[gen] = [best[1],time.time() - timestamp,quest_line_length,max_act,min_act,self.brute_force]
 
                 if best[1] > -1000:
                     found = True
@@ -461,8 +463,8 @@ class quest_library:
                         point = random.randint(0,quest_line_length-1)
                         offspring2[point] = random.choice(self.library)
 
-                    offspring1  =  [offspring1, curate_fitness(offspring1, max_act)]
-                    offspring2  =  [offspring2, curate_fitness(offspring2, max_act)]
+                    offspring1  =  [offspring1, curate_fitness(offspring1, max_act,min_act)]
+                    offspring2  =  [offspring2, curate_fitness(offspring2, max_act,min_act)]
 
                     new_pop.append(offspring1)
 
@@ -472,7 +474,9 @@ class quest_library:
                 self.pop = new_pop
                 best = sorted(self.pop, key=itemgetter(1))[-1]
                 print("Fitness: ",best[1])
-                curate_logs[gen] = [best[1],time.time() - timestamp,quest_line_length,max_act,self.brute_force]
+                
+                if log:
+                    curate_logs[gen] = [best[1],time.time() - timestamp,quest_line_length,max_act,self.brute_force]
                 gen += 1
 
                 if best[1] > -1000:
@@ -480,7 +484,8 @@ class quest_library:
                     print(f"Found the required quest line on gen {gen}")
                     self.pop = []
                     return best
+        if log:
 
-        curate_logs = pd.DataFrame.from_dict(curate_logs).T
-        curate_logs.columns = ["fitness","elapsed_time","quest_line_length","max_act","brute_force"]
-        curate_logs.to_csv(f"logs/curation_logs_{timestamp}.csv")
+            curate_logs = pd.DataFrame.from_dict(curate_logs).T
+            curate_logs.columns = ["fitness","elapsed_time","quest_line_length","max_act","brute_force"]
+            curate_logs.to_csv(f"logs/curation_logs_{timestamp}.csv")
