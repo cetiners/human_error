@@ -143,11 +143,10 @@ class map:
         
         if blurred:
             self.views[name] = blurry_lines(vor_map)
+            self.meta["blurred"] = self.views[name]
             
         else:
             self.views[name] = vor_map
-
-        self.meta["final"] = vor_map
 
         self.vors[name] = vor
         self.location_coordinates[name] = vor.points
@@ -160,17 +159,21 @@ class map:
         size = self.size
 
         map_1 = toddler(size, 2, seed_1)
+        self.meta["map_1"] = map_1
         uniform_map_1 = histeq(map_1, alpha=alpha)
         cells_1 = average_cells(self.views[map_name], uniform_map_1)
         map_1 = fill_cells(self.views[map_name], cells_1)
+        self.meta["average_cells_1"] = map_1
         map_1_range = [np.amax(map_1),np.amin(map_1)]
 
         if double:
 
             map_2 = toddler(size, 2, seed_2)
+            self.meta["map_2"] = map_2
             uniform_map_2 = histeq(map_2, alpha=alpha)
             cells_2 = average_cells(self.views[map_name], uniform_map_2)
             map_2 = fill_cells(self.views[map_name], cells_2)
+            self.meta["average_cells_2"] = map_2
             map_2_range = [np.amax(map_2),np.amin(map_2)]
 
         else:

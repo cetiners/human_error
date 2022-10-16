@@ -251,11 +251,12 @@ class quest_pop:
 
         return best_ind
 
-    def evolve(self, early_stop = False, gens=100, mu_p = 0.1, mutation="point",xo = "single_point", print_it=False):
+    def evolve(self, early_stop = False, gens=100, mu_p = 0.1, mutation="point",xo = "single_point", print_it=False, fancy_save = False):
 
         gen = 0
         timestamp = time.time()
         satisfied = False
+        self.fancy = []
 
         if self.steps == 1:
             satisfied = True
@@ -318,6 +319,9 @@ class quest_pop:
                     new_pop.append(offspring2)
 
             self.population = new_pop
+
+            if fancy_save:
+                self.fancy.append([i.path for i in new_pop])
 
             gen += 1
             
