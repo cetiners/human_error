@@ -5,4 +5,4 @@ This project aims to utilize evolutionary algorithms for content generation. For
 
 ## Quest evolving process example
 
-![](https://github.com/cetiners/human_error/blob/main/fancy/ohhhhyeaaah.gif)
+![](https://github.com/cetiners/human_error/blob/main/fancy/ohhhhyeaaah.gif) 
